@@ -3,12 +3,18 @@ package services
 import (
 	"encoding/json"
 
-	"github.com/niketa/docker_orchestrator/model"
+	"github.com/docker_orchestrator/model"
 )
 
-func Unmarshaljs(bytevalue []byte) error {
+func UnmarshalJsInsert(bytevalue []byte) error {
 
-	var jsonObject model.JsonObject
-	json.Unmarshal(bytevalue, &jsonObject)
-	return model.InsertJsonObject(jsonObject)
+	var rootobject model.Root
+	json.Unmarshal(bytevalue, &rootobject)
+	return model.InsertJsonObject(rootobject)
+}
+func UnmarshalJsUpdate(bytevalue []byte) error {
+
+	var rootobject model.Root
+	json.Unmarshal(bytevalue, &rootobject)
+	return model.UpdateObject(rootobject)
 }

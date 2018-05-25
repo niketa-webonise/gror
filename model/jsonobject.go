@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/niketa/docker_orchestrator/database"
+	"github.com/docker_orchestrator/database"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -68,7 +68,7 @@ type SystemInfo struct {
 	Name        string `json:"name" bson:"name"`
 }
 
-type JsonObject struct {
+type Root struct {
 	ID         bson.ObjectId `json:"id" bson:"_id"`
 	SystemInfo SystemInfo    `json:"systemInfo" bson:"systemInfo"`
 	AuthDatas  []AuthData    `json:"authData" bson:"authData"`
@@ -76,7 +76,11 @@ type JsonObject struct {
 	Components []Component   `json:"components" bson:"components"`
 }
 
-func InsertJsonObject(jsonObject JsonObject) error {
+func InsertJsonObject(rootobject Root) error {
 	c := database.Collection()
-	return c.Insert(jsonObject)
+	return c.Insert(rootobject)
+}
+func UpdateObject(rootobject Root) error {
+	c := database.Collection()
+	return c.UpdateId(rootobject.ID, &rootobject)
 }

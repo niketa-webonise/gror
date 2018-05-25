@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/niketa/docker_orchestrator/database"
-	"github.com/niketa/docker_orchestrator/routes"
+	"github.com/docker_orchestrator/database"
+	"github.com/docker_orchestrator/routes"
 )
 
 func main() {

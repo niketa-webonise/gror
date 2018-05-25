@@ -6,10 +6,10 @@ import (
 
 var db *mgo.Database
 
-func Init() (error) {
+func Init() error {
 	session, err := mgo.Dial("mongodb://127.0.0.1:27017/")
 
-	db = session.DB("demo")
+	db = session.DB("demoDB")
 
 	return err
 }

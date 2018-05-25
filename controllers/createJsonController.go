@@ -6,33 +6,54 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/niketa/docker_orchestrator/model"
-	"github.com/niketa/docker_orchestrator/services"
+	"github.com/docker_orchestrator/model"
+	"github.com/docker_orchestrator/services"
+	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func CreateJsonObject(w http.ResponseWriter, r *http.Request) {
+func DockerConfig(w http.ResponseWriter, r *http.Request) {
 
 	//defer r.Body.Close()
-	var jsonobject model.JsonObject
-	err := json.NewDecoder(r.Body).Decode(&jsonobject)
+	var rootobject model.Root
+	err := json.NewDecoder(r.Body).Decode(&rootobject)
 	if err != nil {
+		log.Fatal(err)
 		return
 	}
-	jsonobject.ID = bson.NewObjectId()
-	/*	err = model.InsertJsonObject(jsonobject)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}*/
-	marshaljb, _ := json.Marshal(jsonobject)
+	rootobject.ID = bson.NewObjectId()
 
-	err = services.Unmarshaljs(marshaljb)
+	marshalData, _ := json.Marshal(rootobject)
+
+	err = services.UnmarshalJsInsert(marshalData)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", marshaljb)
+	fmt.Fprintf(w, "%s", marshalData)
+}
+
+func UpdateJsonObject(w http.ResponseWriter, r *http.Request) {
+	// defer r.Body.Close()
+	var rootobject model.Root
+	err := json.NewDecoder(r.Body).Decode(&rootobject)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	params := mux.Vars(r)
+	rootobject.ID = bson.ObjectIdHex(params["id"])
+	fmt.Println(rootobject.ID)
+	marshalData, _ := json.Marshal(rootobject)
+
+	err = services.UnmarshalJsUpdate(marshalData)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	fmt.Fprintf(w, "%s", marshalData)
 }
