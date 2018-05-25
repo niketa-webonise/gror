@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/docker_orchestrator/database"
-	"github.com/docker_orchestrator/routes"
+	"github.com/gror/database"
+	"github.com/gror/routes"
 )
 
 func main() {

@@ -6,13 +6,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/docker_orchestrator/model"
-	"github.com/docker_orchestrator/services"
 	"github.com/gorilla/mux"
+	"github.com/gror/model"
+	"github.com/gror/services"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func DockerConfig(w http.ResponseWriter, r *http.Request) {
+func CreateDocker(w http.ResponseWriter, r *http.Request) {
 
 	//defer r.Body.Close()
 	var rootobject model.Root
@@ -25,7 +25,7 @@ func DockerConfig(w http.ResponseWriter, r *http.Request) {
 
 	marshalData, _ := json.Marshal(rootobject)
 
-	err = services.UnmarshalJsInsert(marshalData)
+	err = services.UnmarshalInsertData(marshalData)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -35,7 +35,26 @@ func DockerConfig(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", marshalData)
 }
 
-func UpdateJsonObject(w http.ResponseWriter, r *http.Request) {
+func GetDocker(w http.ResponseWriter, req *http.Request) {
+
+	var rootobject model.Root
+	vars := mux.Vars(req)
+	rootobject.ID = bson.ObjectIdHex(vars["id"])
+
+	marshalData, _ := json.Marshal(rootobject)
+
+	rootobject, err := services.UnmarshalGetItem(marshalData)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	marshalResultData, _ := json.Marshal(rootobject)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	fmt.Fprintf(w, "%s", marshalResultData)
+}
+
+func UpdateDocker(w http.ResponseWriter, r *http.Request) {
 	// defer r.Body.Close()
 	var rootobject model.Root
 	err := json.NewDecoder(r.Body).Decode(&rootobject)
@@ -48,7 +67,7 @@ func UpdateJsonObject(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(rootobject.ID)
 	marshalData, _ := json.Marshal(rootobject)
 
-	err = services.UnmarshalJsUpdate(marshalData)
+	err = services.UnmarshalUpdateData(marshalData)
 	if err != nil {
 		log.Fatal(err)
 		return
