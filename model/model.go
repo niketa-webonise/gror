@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/docker_orchestrator/database"
+	"github.com/gror/database"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -76,11 +76,19 @@ type Root struct {
 	Components []Component   `json:"components" bson:"components"`
 }
 
-func InsertJsonObject(rootobject Root) error {
+func CreateDocker(rootobject Root) error {
 	c := database.Collection()
 	return c.Insert(rootobject)
 }
-func UpdateObject(rootobject Root) error {
+
+func GetDockerItem(rootobject Root) (Root, error) {
+
+	c := database.Collection()
+	err := c.FindId(rootobject.ID).One(&rootobject)
+	return rootobject, err
+}
+
+func UpdateDocker(rootobject Root) error {
 	c := database.Collection()
 	return c.UpdateId(rootobject.ID, &rootobject)
 }
