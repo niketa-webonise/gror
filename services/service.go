@@ -13,7 +13,7 @@ func InsertData(bytevalue []byte) error {
 	return model.CreateDocker(rootobject)
 }
 
-func UnmarshalGetItem(bytevalue []byte) (model.Root, error) {
+func GetItem(bytevalue []byte) (model.Root, error) {
 
 	var rootobject model.Root
 	json.Unmarshal(bytevalue, &rootobject)
@@ -21,7 +21,7 @@ func UnmarshalGetItem(bytevalue []byte) (model.Root, error) {
 	return rootobject, err
 }
 
-func UnmarshalUpdateData(bytevalue []byte) error {
+func UpdateData(bytevalue []byte) error {
 
 	var rootobject model.Root
 	json.Unmarshal(bytevalue, &rootobject)

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	boom "github.com/darahayes/go-boom"
 	"github.com/gorilla/mux"
 	"github.com/gror/model"
 	"github.com/gror/services"
@@ -31,33 +32,28 @@ func CreateDockerConfig(w http.ResponseWriter, r *http.Request) {
 	var rootobject model.Root
 	err := json.NewDecoder(r.Body).Decode(&rootobject)
 	if err != nil {
+		boom.BadData(w, "Unprocessable Entity error")
+		return
+	}
+
+	rootobject.ID = bson.NewObjectId()
+
+	marshalData, err := json.Marshal(rootobject)
+	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	rootobject.ID = bson.NewObjectId()
 
-	marshalData, err1 := json.Marshal(rootobject)
-	if err1 != nil {
-		log.Fatal(err1)
-		return
-	}
 	err = services.InsertData(marshalData)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Fail to insert")
+		boom.Conflict(w, "The request could not be completed because of a conflict")
 		return
 	} else {
-		marshalData, err1 := json.Marshal(rootobject)
-		if err1 != nil {
-			log.Fatal(err1)
-			return
-		}
+		w.Header().Set("Content-Type", "application/json")
 		respondWithJson(w, http.StatusCreated, marshalData)
 		respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
-
 	}
-	w.Header().Set("Content-Type", "application/json")
 }
-
 func GetDockerConfig(w http.ResponseWriter, req *http.Request) {
 
 	var rootobject model.Root
@@ -70,23 +66,23 @@ func GetDockerConfig(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		rootobject, err := services.UnmarshalGetItem(marshalData)
+		rootobject, err := services.GetItem(marshalData)
 
 		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "Record not found")
+			boom.NotFound(w, "Record not found")
 			return
 		} else {
-			marshalResultData, _ := json.Marshal(rootobject)
+			marshalResultData, err2 := json.Marshal(rootobject)
+			if err2 != nil {
+				log.Fatal(err2)
+				return
+			}
 			fmt.Fprintf(w, "%s", marshalResultData)
-
 		}
-
 		w.Header().Set("Content-Type", "application/json")
-
 	} else {
-		respondWithError(w, http.StatusBadRequest, "Invalid id bad request")
+		boom.BadRequest(w, "Invalid Id bad request")
 	}
-
 }
 
 func UpdateDockerConfig(w http.ResponseWriter, r *http.Request) {
@@ -107,9 +103,9 @@ func UpdateDockerConfig(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err1)
 			return
 		}
-		err = services.UnmarshalUpdateData(marshalData)
+		err = services.UpdateData(marshalData)
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, "Record not found fail to update")
+			boom.NotFound(w, "Record not found failed to update")
 			return
 		} else {
 			respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
@@ -117,7 +113,6 @@ func UpdateDockerConfig(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 	} else {
-		respondWithError(w, http.StatusBadRequest, "Invalid id bad request")
+		boom.BadRequest(w, "Invalid id bad request")
 	}
-
 }
