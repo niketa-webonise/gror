@@ -3,17 +3,17 @@ package services
 import (
 	"encoding/json"
 
-	"github.com/gror/model"
+	"github.com/gror/models"
 )
 
-func UnmarshalInsertData(bytevalue []byte) error {
+func InsertData(bytevalue []byte) error {
 
 	var rootobject model.Root
 	json.Unmarshal(bytevalue, &rootobject)
 	return model.CreateDocker(rootobject)
 }
 
-func UnmarshalGetItem(bytevalue []byte) (model.Root, error) {
+func GetItem(bytevalue []byte) (model.Root, error) {
 
 	var rootobject model.Root
 	json.Unmarshal(bytevalue, &rootobject)
@@ -21,7 +21,7 @@ func UnmarshalGetItem(bytevalue []byte) (model.Root, error) {
 	return rootobject, err
 }
 
-func UnmarshalUpdateData(bytevalue []byte) error {
+func UpdateData(bytevalue []byte) error {
 
 	var rootobject model.Root
 	json.Unmarshal(bytevalue, &rootobject)

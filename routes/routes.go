@@ -1,20 +1,14 @@
 package routes
 
 import (
-	"log"
-	"net/http"
-
 	"github.com/gorilla/mux"
 	"github.com/gror/controllers"
 )
 
-func CreateRoute() {
+func CreateRoute(r *mux.Router) {
 
-	r := mux.NewRouter()
-
-	r.HandleFunc("/docker/config", controllers.CreateDocker).Methods("POST")
-	r.HandleFunc("/docker/config/{id}", controllers.GetDocker).Methods("GET")
-	r.HandleFunc("/docker/config/{id}", controllers.UpdateDocker).Methods("PUT")
-	log.Fatal(http.ListenAndServe(":7800", r))
+	r.HandleFunc("/docker/config", controllers.CreateDockerConfig).Methods("POST")
+	r.HandleFunc("/docker/config/{id}", controllers.GetDockerConfig).Methods("GET")
+	r.HandleFunc("/docker/config/{id}", controllers.UpdateDockerConfig).Methods("PUT")
 
 }
