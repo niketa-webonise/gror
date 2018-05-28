@@ -13,14 +13,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func respondWithError(w http.ResponseWriter, code int, msg string) {
-	respondWithJson(w, code, map[string]string{"error": msg})
-}
-
 func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
-	response, err1 := json.Marshal(payload)
-	if err1 != nil {
-		log.Fatal(err1)
+	response, err := json.Marshal(payload)
+	if err != nil {
+		log.Fatal(err)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -32,7 +28,7 @@ func CreateDockerConfig(w http.ResponseWriter, r *http.Request) {
 	var rootobject model.Root
 	err := json.NewDecoder(r.Body).Decode(&rootobject)
 	if err != nil {
-		boom.BadData(w, "Unprocessable Entity error")
+		boom.BadData(w, "Unprocessable Entity Error")
 		return
 	}
 
@@ -49,8 +45,7 @@ func CreateDockerConfig(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		w.Header().Set("Content-Type", "application/json")
-		respondWithJson(w, http.StatusCreated, marshalData)
-		respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
+		respondWithJson(w, http.StatusCreated, map[string]string{"result": "success"})
 	}
 }
 
@@ -60,21 +55,21 @@ func GetDockerConfig(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	if bson.IsObjectIdHex(vars["id"]) {
 		rootobject.ID = bson.ObjectIdHex(vars["id"])
-		marshalData, err1 := json.Marshal(rootobject)
-		if err1 != nil {
-			log.Fatal(err1)
+		marshalData, unmarshalErr := json.Marshal(rootobject)
+		if unmarshalErr != nil {
+			log.Fatal(unmarshalErr)
 			return
 		}
 
 		rootobject, err := services.GetItem(marshalData)
 
 		if err != nil {
-			boom.NotFound(w, "Record not found")
+			boom.NotFound(w, "Data not found with this ID "+vars["id"])
 			return
 		} else {
-			marshalResultData, err2 := json.Marshal(rootobject)
-			if err2 != nil {
-				log.Fatal(err2)
+			marshalResultData, unmarshalErr := json.Marshal(rootobject)
+			if unmarshalErr != nil {
+				log.Fatal(unmarshalErr)
 				return
 			}
 			fmt.Fprintf(w, "%s", marshalResultData)
@@ -82,6 +77,7 @@ func GetDockerConfig(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 	} else {
 		boom.BadRequest(w, "Invalid Id bad request")
+		return
 	}
 }
 
@@ -98,14 +94,14 @@ func UpdateDockerConfig(w http.ResponseWriter, r *http.Request) {
 	if bson.IsObjectIdHex(params["id"]) {
 		rootobject.ID = bson.ObjectIdHex(params["id"])
 
-		marshalData, err1 := json.Marshal(rootobject)
-		if err1 != nil {
-			log.Fatal(err1)
+		marshalData, unmarshalErr := json.Marshal(rootobject)
+		if unmarshalErr != nil {
+			log.Fatal(unmarshalErr)
 			return
 		}
 		err = services.UpdateData(marshalData)
 		if err != nil {
-			boom.NotFound(w, "Record not found failed to update")
+			boom.NotFound(w, "Data not found with this ID "+params["id"])
 			return
 		} else {
 			respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
@@ -113,5 +109,6 @@ func UpdateDockerConfig(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 	} else {
 		boom.BadRequest(w, "Invalid id bad request")
+		return
 	}
 }
