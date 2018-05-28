@@ -3,7 +3,7 @@ package services
 import (
 	"encoding/json"
 
-	"github.com/gror/model"
+	"github.com/gror/models"
 )
 
 func InsertData(bytevalue []byte) error {

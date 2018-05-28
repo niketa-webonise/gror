@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	boom "github.com/darahayes/go-boom"
+	"github.com/darahayes/go-boom"
 	"github.com/gorilla/mux"
-	"github.com/gror/model"
+	"github.com/gror/models"
 	"github.com/gror/services"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -37,7 +37,6 @@ func CreateDockerConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rootobject.ID = bson.NewObjectId()
-
 	marshalData, err := json.Marshal(rootobject)
 	if err != nil {
 		log.Fatal(err)
@@ -54,6 +53,7 @@ func CreateDockerConfig(w http.ResponseWriter, r *http.Request) {
 		respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
 	}
 }
+
 func GetDockerConfig(w http.ResponseWriter, req *http.Request) {
 
 	var rootobject model.Root
@@ -109,7 +109,6 @@ func UpdateDockerConfig(w http.ResponseWriter, r *http.Request) {
 			return
 		} else {
 			respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
-
 		}
 		w.Header().Set("Content-Type", "application/json")
 	} else {
