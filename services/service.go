@@ -6,7 +6,7 @@ import (
 	"github.com/gror/model"
 )
 
-func UnmarshalInsertData(bytevalue []byte) error {
+func InsertData(bytevalue []byte) error {
 
 	var rootobject model.Root
 	json.Unmarshal(bytevalue, &rootobject)

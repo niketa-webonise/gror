@@ -2,7 +2,11 @@ package main
 
 import (
 	"log"
-
+	"net/http"
+	// "net/http"
+	//
+	// "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 	"github.com/gror/database"
 	"github.com/gror/routes"
 )
@@ -14,6 +18,7 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-
-	routes.CreateRoute()
+	r := mux.NewRouter()
+	routes.CreateRoute(r)
+	log.Fatal(http.ListenAndServe(":7800", r))
 }

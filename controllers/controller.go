@@ -12,9 +12,22 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func CreateDocker(w http.ResponseWriter, r *http.Request) {
+func respondWithError(w http.ResponseWriter, code int, msg string) {
+	respondWithJson(w, code, map[string]string{"error": msg})
+}
 
-	//defer r.Body.Close()
+func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
+	response, err1 := json.Marshal(payload)
+	if err1 != nil {
+		log.Fatal(err1)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
+}
+func CreateDockerConfig(w http.ResponseWriter, r *http.Request) {
+
 	var rootobject model.Root
 	err := json.NewDecoder(r.Body).Decode(&rootobject)
 	if err != nil {
@@ -23,39 +36,61 @@ func CreateDocker(w http.ResponseWriter, r *http.Request) {
 	}
 	rootobject.ID = bson.NewObjectId()
 
-	marshalData, _ := json.Marshal(rootobject)
-
-	err = services.UnmarshalInsertData(marshalData)
-	if err != nil {
-		log.Fatal(err)
+	marshalData, err1 := json.Marshal(rootobject)
+	if err1 != nil {
+		log.Fatal(err1)
 		return
 	}
+	err = services.InsertData(marshalData)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Fail to insert")
+		return
+	} else {
+		marshalData, err1 := json.Marshal(rootobject)
+		if err1 != nil {
+			log.Fatal(err1)
+			return
+		}
+		respondWithJson(w, http.StatusCreated, marshalData)
+		respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
+
+	}
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", marshalData)
 }
 
-func GetDocker(w http.ResponseWriter, req *http.Request) {
+func GetDockerConfig(w http.ResponseWriter, req *http.Request) {
 
 	var rootobject model.Root
 	vars := mux.Vars(req)
-	rootobject.ID = bson.ObjectIdHex(vars["id"])
+	if bson.IsObjectIdHex(vars["id"]) {
+		rootobject.ID = bson.ObjectIdHex(vars["id"])
+		marshalData, err1 := json.Marshal(rootobject)
+		if err1 != nil {
+			log.Fatal(err1)
+			return
+		}
 
-	marshalData, _ := json.Marshal(rootobject)
+		rootobject, err := services.UnmarshalGetItem(marshalData)
 
-	rootobject, err := services.UnmarshalGetItem(marshalData)
-	if err != nil {
-		log.Fatal(err)
-		return
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, "Record not found")
+			return
+		} else {
+			marshalResultData, _ := json.Marshal(rootobject)
+			fmt.Fprintf(w, "%s", marshalResultData)
+
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+	} else {
+		respondWithError(w, http.StatusBadRequest, "Invalid id bad request")
 	}
-	marshalResultData, _ := json.Marshal(rootobject)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", marshalResultData)
+
 }
 
-func UpdateDocker(w http.ResponseWriter, r *http.Request) {
-	// defer r.Body.Close()
+func UpdateDockerConfig(w http.ResponseWriter, r *http.Request) {
+
 	var rootobject model.Root
 	err := json.NewDecoder(r.Body).Decode(&rootobject)
 	if err != nil {
@@ -63,16 +98,26 @@ func UpdateDocker(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	params := mux.Vars(r)
-	rootobject.ID = bson.ObjectIdHex(params["id"])
-	fmt.Println(rootobject.ID)
-	marshalData, _ := json.Marshal(rootobject)
 
-	err = services.UnmarshalUpdateData(marshalData)
-	if err != nil {
-		log.Fatal(err)
-		return
+	if bson.IsObjectIdHex(params["id"]) {
+		rootobject.ID = bson.ObjectIdHex(params["id"])
+
+		marshalData, err1 := json.Marshal(rootobject)
+		if err1 != nil {
+			log.Fatal(err1)
+			return
+		}
+		err = services.UnmarshalUpdateData(marshalData)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "Record not found fail to update")
+			return
+		} else {
+			respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
+
+		}
+		w.Header().Set("Content-Type", "application/json")
+	} else {
+		respondWithError(w, http.StatusBadRequest, "Invalid id bad request")
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-	fmt.Fprintf(w, "%s", marshalData)
+
 }
