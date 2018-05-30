@@ -9,7 +9,6 @@ type server servers.ServerDemo
 
 type DbConnInitialiser interface {
 	Init() (*mgo.Database, error)
-	Collection() *mgo.Collection
 }
 type DbConfig struct {
 	Dial   string
