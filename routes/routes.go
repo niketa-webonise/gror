@@ -1,12 +1,15 @@
 package routes
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/gror/controllers"
+	"github.com/gror/servers"
 )
 
-func CreateRoute(r *mux.Router) {
-	r.HandleFunc("/docker/config", controllers.CreateDockerConfig).Methods("POST")
-	r.HandleFunc("/docker/config/{id}", controllers.GetDockerConfig).Methods("GET")
-	r.HandleFunc("/docker/config/{id}", controllers.UpdateDockerConfig).Methods("PUT")
+type RouteWrapper struct {
+	Server *servers.ServerDemo
+}
+
+func (s *RouteWrapper) CreateRoute() {
+	s.Server.Router.HandleFunc("/docker/config", s.Server.DockerController.CreateDockerConfig()).Methods("POST")
+	s.Server.Router.HandleFunc("/docker/config/{id}", s.Server.DockerController.GetDockerConfig()).Methods("GET")
+	s.Server.Router.HandleFunc("/docker/config/{id}", s.Server.DockerController.UpdateDockerConfig()).Methods("PUT")
 }
