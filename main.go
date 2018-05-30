@@ -15,8 +15,6 @@ import (
 
 func main() {
 
-	// type server servers.ServerDemo
-
 	dbconfig := &database.DbConfig{
 		Dial:   "mongodb://127.0.0.1:27017/",
 		DbName: "dockerDB",
