@@ -17,9 +17,9 @@ type DbConfig struct {
 }
 
 func (dc *DbConfig) Init() (*mgo.Database, error) {
-	session, err := mgo.Dial( /*"mongodb://127.0.0.1:27017/"*/ dc.Dial)
+	session, err := mgo.Dial(dc.Dial)
 
-	Db := session.DB( /*"dockerDB"*/ dc.DbName)
+	Db := session.DB(dc.DbName)
 
 	return Db, err
 }

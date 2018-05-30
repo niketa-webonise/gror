@@ -90,8 +90,6 @@ func (s *DockerDaoImpl) CreateDocker(rootobject Root) error {
 }
 
 func (s *DockerDaoImpl) GetDockerItem(rootobject Root) (Root, error) {
-
-	// c := database.Collection()
 	c := s.DB.C("dockers")
 	err := c.FindId(rootobject.ID).One(&rootobject)
 	return rootobject, err
