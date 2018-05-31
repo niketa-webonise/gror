@@ -1,7 +1,7 @@
-package model
+package models
 
 import (
-	"github.com/gror/database"
+	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -75,20 +75,27 @@ type Root struct {
 	Hosts      []Host        `json:"hosts" bson:"hosts"`
 	Components []Component   `json:"components" bson:"components"`
 }
+type DockerDao interface {
+	CreateDocker(rootobject Root) error
+	GetDockerItem(rootobject Root) (Root, error)
+	UpdateDocker(rootobject Root) error
+}
+type DockerDaoImpl struct {
+	DB *mgo.Database
+}
 
-func CreateDocker(rootobject Root) error {
-	c := database.Collection()
+func (s *DockerDaoImpl) CreateDocker(rootobject Root) error {
+	c := s.DB.C("dockers")
 	return c.Insert(rootobject)
 }
 
-func GetDockerItem(rootobject Root) (Root, error) {
-
-	c := database.Collection()
+func (s *DockerDaoImpl) GetDockerItem(rootobject Root) (Root, error) {
+	c := s.DB.C("dockers")
 	err := c.FindId(rootobject.ID).One(&rootobject)
 	return rootobject, err
 }
 
-func UpdateDocker(rootobject Root) error {
-	c := database.Collection()
+func (s *DockerDaoImpl) UpdateDocker(rootobject Root) error {
+	c := s.DB.C("dockers")
 	return c.UpdateId(rootobject.ID, &rootobject)
 }
