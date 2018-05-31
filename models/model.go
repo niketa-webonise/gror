@@ -1,15 +1,15 @@
-package model
+package models
 
 import (
-	"github.com/gror/database"
+	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 type Instance struct {
 	EnvMap              EnvMap        `json:"EnvMap" bson:"EnvMap"`
 	PortMapping         PortMapping   `json:"PortMapping" bson:"portMapping"`
-	AuthId              string        `json:"authId" bson:"authId"`
-	HostId              string        `json:"hostId" bson:"hostId"`
+	AuthID              string        `json:"authId" bson:"authId"`
+	HostID              string        `json:"hostId" bson:"hostId"`
 	VolumeMapping       VolumeMapping `json:"volumeMapping" bson:"volumeMapping"`
 	VolumesFrom         []string      `json:"volumesFrom" bson:"volumesFrom"`
 	CommandToBeExecuted string        `json:"commandToBeExecuted" bson:"commandToBeExecuted"`
@@ -46,7 +46,7 @@ type Component struct {
 
 type Host struct {
 	Protocol                string `json:"protocol" bson:"protocol"`
-	ApiVersion              string `json:"apiVersion" bson:"apiVersion"`
+	ApIVersion              string `json:"apiVersion" bson:"apiVersion"`
 	HostType                string `json:"hostType" bson:"hostType"`
 	DockerVersion           string `json:"dockerVersion" bson:"dockerVersion"`
 	Alias                   string `json:"alias" bson:"alias"`
@@ -75,20 +75,27 @@ type Root struct {
 	Hosts      []Host        `json:"hosts" bson:"hosts"`
 	Components []Component   `json:"components" bson:"components"`
 }
+type DockerDao interface {
+	CreateDocker(rootobject Root) error
+	GetDockerItem(rootobject Root) (Root, error)
+	UpdateDocker(rootobject Root) error
+}
+type DockerDaoImpl struct {
+	DB *mgo.Database
+}
 
-func CreateDocker(rootobject Root) error {
-	c := database.Collection()
+func (s *DockerDaoImpl) CreateDocker(rootobject Root) error {
+	c := s.DB.C("dockers")
 	return c.Insert(rootobject)
 }
 
-func GetDockerItem(rootobject Root) (Root, error) {
-
-	c := database.Collection()
+func (s *DockerDaoImpl) GetDockerItem(rootobject Root) (Root, error) {
+	c := s.DB.C("dockers")
 	err := c.FindId(rootobject.ID).One(&rootobject)
 	return rootobject, err
 }
 
-func UpdateDocker(rootobject Root) error {
-	c := database.Collection()
+func (s *DockerDaoImpl) UpdateDocker(rootobject Root) error {
+	c := s.DB.C("dockers")
 	return c.UpdateId(rootobject.ID, &rootobject)
 }

@@ -4,16 +4,18 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-var db *mgo.Database
+type DBWrapper struct {
+	DB *mgo.Database
+}
 
-func Init() error {
+func (s *DBWrapper) Init() error {
 	session, err := mgo.Dial("mongodb://127.0.0.1:27017/")
 
-	db = session.DB("dockerDB")
+	s.DB = session.DB("dockerDB")
 
 	return err
 }
 
-func Collection() *mgo.Collection {
-	return db.C("dockers")
+func (s *DBWrapper) Collection() *mgo.Collection {
+	return s.DB.C("dockers")
 }
