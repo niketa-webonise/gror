@@ -38,8 +38,10 @@ func main() {
 	r := &routes.RouteWrapper{
 		Server: sr,
 	}
+
 	r.CreateRoute()
-	err = http.ListenAndServe(":8080", r.Server.Router)
+	r.Server.Router.Handle("/Static/", http.StripPrefix("/Static/", http.FileServer(http.Dir("Static"))))
+	err = http.ListenAndServe(":9090", r.Server.Router)
 	if err != nil {
 		log.Fatal(err)
 		return

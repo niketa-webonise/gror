@@ -9,6 +9,7 @@ import (
 type IDockerService interface {
 	InsertData(bytevalue []byte) error
 	GetItem(bytevalue []byte) (models.Root, error)
+	GetList(bytevalue []byte) ([]string, []string)
 	UpdateData(bytevalue []byte) error
 }
 
@@ -30,7 +31,13 @@ func (s *DockerServiceImpl) GetItem(bytevalue []byte) (models.Root, error) {
 	rootobject, err := s.DockerDaoImpl.GetDockerItem(rootobject)
 	return rootobject, err
 }
+func (s *DockerServiceImpl) GetList(bytevalue []byte) ([]string, []string) {
 
+	var rootobject models.Root
+	json.Unmarshal(bytevalue, &rootobject)
+	names, objid := s.DockerDaoImpl.GetDockerList(rootobject)
+	return names, objid
+}
 func (s *DockerServiceImpl) UpdateData(bytevalue []byte) error {
 
 	var rootobject models.Root

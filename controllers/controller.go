@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
+	"html/template"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,16 +11,52 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+var tmpl = template.Must(template.ParseGlob("view/*.html"))
+
+type ProjectNames struct {
+	Names []string
+	ObjId []string
+}
 type DockerConfigInterface interface {
 	UpdateDockerConfig() http.HandlerFunc
 	CreateDockerConfig() http.HandlerFunc
 	GetDockerConfig() http.HandlerFunc
+	DockerForm() http.HandlerFunc
+	GetDockerConfigList() http.HandlerFunc
+	DockerListForm() http.HandlerFunc
 }
 
 type DockerControllerImpl struct {
 	DockerService services.IDockerService
 }
 
+func (s *DockerControllerImpl) DockerListForm() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tmpl.ExecuteTemplate(w, "DockerList.html", nil)
+	}
+}
+func (s *DockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var rootobject models.Root
+		marshalData, unmarshalErr := json.Marshal(rootobject)
+		if unmarshalErr != nil {
+			http.Error(w, "Unprocessable Entity error", http.StatusUnprocessableEntity)
+			return
+		}
+		names, objid := s.DockerService.GetList(marshalData)
+
+		p := ProjectNames{}
+		p.Names = names
+		p.ObjId = objid
+		tmpl.ExecuteTemplate(w, "DockerList.html", p)
+
+	}
+}
+func (s *DockerControllerImpl) DockerForm() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tmpl.ExecuteTemplate(w, "DockerForm.html", nil)
+	}
+}
 func (s *DockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -61,17 +97,11 @@ func (s *DockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 			}
 
 			rootobject, err := s.DockerService.GetItem(marshalData)
-
 			if err != nil {
 				http.Error(w, "Record not found of this ID:"+vars["id"], http.StatusNotFound)
 				return
 			} else {
-				marshalResultData, unmarshalErr := json.Marshal(rootobject)
-				if unmarshalErr != nil {
-					http.Error(w, "Unprocessable Entity error", http.StatusUnprocessableEntity)
-					return
-				}
-				fmt.Fprintf(w, "%s", marshalResultData)
+				tmpl.ExecuteTemplate(w, "DockerData.html", rootobject)
 			}
 			w.Header().Set("Content-Type", "application/json")
 		} else {
