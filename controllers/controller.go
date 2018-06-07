@@ -3,6 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,21 +13,59 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+//ConfigData defines Names and Id fields
+type ConfigData struct {
+	Names []string //The name of the project
+	ID    []string //The unique Id store for each record in database
+}
+
+//DockerConfigInterface wraps all methods of controller.
 type DockerConfigInterface interface {
 	UpdateDockerConfig() http.HandlerFunc
 	CreateDockerConfig() http.HandlerFunc
 	GetDockerConfig() http.HandlerFunc
+	GetDockerConfigForm() http.HandlerFunc
+	GetDockerConfigList() http.HandlerFunc
 }
 
+//DockerControllerImpl defines DockerService which is of type IDockerService interface.
 type DockerControllerImpl struct {
 	DockerService services.IDockerService
 }
 
+//GetDockerConfigForm method execute the template "dockerconfig.gtpl".
+func (s *DockerControllerImpl) GetDockerConfigForm() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		//names, ids := s.DockerService.GetList()
+		//configData := &ConfigData{Names: names, ID: ids}
+		t, _ := template.ParseFiles("./views/dockerconfig.gtpl")
+		t.Execute(w, nil)
+	}
+}
+
+/*GetDockerConfigList method execute the template "dockerlist.gtpl"
+and in response sending the struct that contains names and ids.*/
+func (s *DockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		names, ids := s.DockerService.GetList()
+
+		configData := &ConfigData{Names: names, ID: ids}
+
+		t, _ := template.ParseFiles("./views/dockerlist.gtpl")
+
+		t.ExecuteTemplate(w, "dockerlist.gtpl", configData)
+
+	}
+}
+
+//CreateDockerConfig method get called on POST request and return response in Header
 func (s *DockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var rootobject models.Root
 		err := json.NewDecoder(r.Body).Decode(&rootobject)
+
 		if err != nil {
 			http.Error(w, "Unprocessable Entity error", http.StatusUnprocessableEntity)
 			return
@@ -44,10 +84,13 @@ func (s *DockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 			return
 		} else {
 			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprintln(w, "{\"message\":\"Successfully created!\"}")
 		}
+
 	}
 }
 
+//GetDockerConfig method get called on GET request
 func (s *DockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var rootobject models.Root
@@ -61,24 +104,19 @@ func (s *DockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 			}
 
 			rootobject, err := s.DockerService.GetItem(marshalData)
-
+			t, _ := template.ParseFiles("./views/dockerconfigDetails.gtpl")
+			t.ExecuteTemplate(w, "dockerconfigDetails.gtpl", rootobject)
 			if err != nil {
 				http.Error(w, "Record not found of this ID:"+vars["id"], http.StatusNotFound)
 				return
-			} else {
-				marshalResultData, unmarshalErr := json.Marshal(rootobject)
-				if unmarshalErr != nil {
-					http.Error(w, "Unprocessable Entity error", http.StatusUnprocessableEntity)
-					return
-				}
-				fmt.Fprintf(w, "%s", marshalResultData)
 			}
-			w.Header().Set("Content-Type", "application/json")
 		} else {
 			http.Error(w, "Invalid Id bad request", http.StatusBadRequest)
 		}
 	}
 }
+
+/*UpdateDockerConfig method get called on PUT request*/
 func (s *DockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var rootobject models.Root
@@ -102,10 +140,10 @@ func (s *DockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
 				http.Error(w, "Record not found of this ID:"+params["id"]+" Failed to update", http.StatusNotFound)
 				return
 			}
-			w.Header().Set("Content-Type", "application/json")
 		} else {
 
 			http.Error(w, "Invalid Id bad request", http.StatusBadRequest)
 		}
+		fmt.Fprintln(w, "{\"message\":\"Successfully updated!\"}")
 	}
 }
