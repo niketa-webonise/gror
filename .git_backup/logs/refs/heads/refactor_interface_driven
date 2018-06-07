@@ -1,0 +1,6 @@
+0000000000000000000000000000000000000000 1f7f0f7624ceb559b25ee3808245ea9fbce97577 webonise <chirag.painter@weboniselab.com> 1527681248 +0530	branch: Created from HEAD
+1f7f0f7624ceb559b25ee3808245ea9fbce97577 309485231cd188e7fc0d3510b89fd695ec04a2d3 webonise <chirag.painter@weboniselab.com> 1527681422 +0530	commit: refactor with interface driven and server
+309485231cd188e7fc0d3510b89fd695ec04a2d3 feaf5c51455df5cd0b4da2a78fde3af3ee04370d webonise <chirag.painter@weboniselab.com> 1527681940 +0530	commit: refactor with interface driven and server
+feaf5c51455df5cd0b4da2a78fde3af3ee04370d 033afeed876380f00059014ccab885440b59ee1b webonise <chirag.painter@weboniselab.com> 1527681998 +0530	commit: refactor with interface driven and server
+033afeed876380f00059014ccab885440b59ee1b 150316ee2731e383e9beb6096e50ef94809eaf98 webonise <chirag.painter@weboniselab.com> 1527683224 +0530	commit: refactor with interface driven and server
+150316ee2731e383e9beb6096e50ef94809eaf98 c19a18d9638b3f4a9b1f1892bc411dee97016f90 niketaj <niketa.jain@weboniselab.com> 1527689663 +0530	commit: server container that contains models,services,database

@@ -1,0 +1,17 @@
+0000000000000000000000000000000000000000 ffb7d5360f585cb1a947e53ab6cc2cbbadac1c9e webonise <chirag.painter@weboniselab.com> 1527230385 +0530	clone: from git@github.com:niketa-webonise/gror.git
+ffb7d5360f585cb1a947e53ab6cc2cbbadac1c9e ffb7d5360f585cb1a947e53ab6cc2cbbadac1c9e webonise <chirag.painter@weboniselab.com> 1527231417 +0530	checkout: moving from master to develop
+ffb7d5360f585cb1a947e53ab6cc2cbbadac1c9e 5269955e38623271217c425904a55aab3486a491 webonise <chirag.painter@weboniselab.com> 1527231501 +0530	checkout: moving from develop to feature_save_get_config
+5269955e38623271217c425904a55aab3486a491 cb7124b49bd66ae8f9c453556538ad9675fbc74e webonise <chirag.painter@weboniselab.com> 1527231663 +0530	commit: added controller to update configuration
+cb7124b49bd66ae8f9c453556538ad9675fbc74e 7cfd78d16bbef9391b25202906f61c9dfcca13fd webonise <chirag.painter@weboniselab.com> 1527250621 +0530	pull origin feature_save_get_config: Fast-forward
+7cfd78d16bbef9391b25202906f61c9dfcca13fd a12cd479fb6e8877353adbabcc7c0dfaa7581a3d webonise <chirag.painter@weboniselab.com> 1527489280 +0530	commit: All changes done
+a12cd479fb6e8877353adbabcc7c0dfaa7581a3d baf7136be13bafd512fc13d58d1f3faf8a86d620 webonise <chirag.painter@weboniselab.com> 1527495886 +0530	commit: added controllers with error handling code
+baf7136be13bafd512fc13d58d1f3faf8a86d620 851351fb155638535da06f4ec7955e4653576220 webonise <chirag.painter@weboniselab.com> 1527496466 +0530	commit (merge): added controllers with error handling code
+851351fb155638535da06f4ec7955e4653576220 dc7fa3b5b7f6b899a41733488cb19c9331893cb5 webonise <chirag.painter@weboniselab.com> 1527510535 +0530	pull origin feature_save_get_config: Fast-forward
+dc7fa3b5b7f6b899a41733488cb19c9331893cb5 1f7f0f7624ceb559b25ee3808245ea9fbce97577 webonise <chirag.painter@weboniselab.com> 1527513010 +0530	commit: added new way of error handling,log.fatal()removed and added id if data is not found of specific id with respective status code
+1f7f0f7624ceb559b25ee3808245ea9fbce97577 1f7f0f7624ceb559b25ee3808245ea9fbce97577 webonise <chirag.painter@weboniselab.com> 1527681248 +0530	checkout: moving from feature_save_get_config to refactor_interface_driven
+1f7f0f7624ceb559b25ee3808245ea9fbce97577 309485231cd188e7fc0d3510b89fd695ec04a2d3 webonise <chirag.painter@weboniselab.com> 1527681422 +0530	commit: refactor with interface driven and server
+309485231cd188e7fc0d3510b89fd695ec04a2d3 feaf5c51455df5cd0b4da2a78fde3af3ee04370d webonise <chirag.painter@weboniselab.com> 1527681940 +0530	commit: refactor with interface driven and server
+feaf5c51455df5cd0b4da2a78fde3af3ee04370d 033afeed876380f00059014ccab885440b59ee1b webonise <chirag.painter@weboniselab.com> 1527681998 +0530	commit: refactor with interface driven and server
+033afeed876380f00059014ccab885440b59ee1b 150316ee2731e383e9beb6096e50ef94809eaf98 webonise <chirag.painter@weboniselab.com> 1527683224 +0530	commit: refactor with interface driven and server
+150316ee2731e383e9beb6096e50ef94809eaf98 c19a18d9638b3f4a9b1f1892bc411dee97016f90 niketaj <niketa.jain@weboniselab.com> 1527689663 +0530	commit: server container that contains models,services,database
+c19a18d9638b3f4a9b1f1892bc411dee97016f90 1f7f0f7624ceb559b25ee3808245ea9fbce97577 niketaj <niketa.jain@weboniselab.com> 1527689795 +0530	checkout: moving from refactor_interface_driven to feature_save_get_config

@@ -6,28 +6,25 @@ import (
 )
 
 type Instance struct {
-	EnvMap              EnvMap        `json:"EnvMap" bson:"EnvMap"`
-	PortMapping         PortMapping   `json:"PortMapping" bson:"portMapping"`
+	EnvMap              EnvMap        `json:"envMap" bson:"envMap"`
+	PortMapping         string        `json:"portMapping" bson:"portMapping"`
 	AuthID              string        `json:"authId" bson:"authId"`
 	HostID              string        `json:"hostId" bson:"hostId"`
 	VolumeMapping       VolumeMapping `json:"volumeMapping" bson:"volumeMapping"`
-	VolumesFrom         []string      `json:"volumesFrom" bson:"volumesFrom"`
+	VolumesFrom         string        `json:"volumesFrom" bson:"volumesFrom"`
 	CommandToBeExecuted string        `json:"commandToBeExecuted" bson:"commandToBeExecuted"`
-	Links               Links         `json:"links" bson:"links"`
+	Links               string        `json:"links" bson:"links"`
 	ImageName           string        `json:"imageName" bson:"imageName"`
 	Tag                 string        `json:"tag" bson:"tag"`
-	HostsMapping        HostsMapping  `json:"hostsMapping" bson:"hostsMapping"`
+	HostsMapping        string        `json:"hostsMapping" bson:"hostsMapping"`
 	Name                string        `json:"name" bson:"name"`
 }
 
-type HostsMapping struct {
-}
+type HostsMapping struct{}
 
-type PortMapping struct {
-}
+type PortMapping struct{}
 
-type Links struct {
-}
+type Links struct{}
 
 type EnvMap struct {
 	CASSANDRA_BROADCAST_ADDRESS string `json:"CASSANDRA_BROADCAST_ADDRESS" bson:"CASSANDRA_BROADCAST_ADDRESS"`
@@ -79,6 +76,7 @@ type DockerDao interface {
 	CreateDocker(rootobject Root) error
 	GetDockerItem(rootobject Root) (Root, error)
 	UpdateDocker(rootobject Root) error
+	GetDockerList() ([]string, []string)
 }
 type DockerDaoImpl struct {
 	DB *mgo.Database
@@ -93,6 +91,19 @@ func (s *DockerDaoImpl) GetDockerItem(rootobject Root) (Root, error) {
 	c := s.DB.C("dockers")
 	err := c.FindId(rootobject.ID).One(&rootobject)
 	return rootobject, err
+}
+func (s *DockerDaoImpl) GetDockerList() ([]string, []string) {
+	var rootobject Root
+	var names []string
+	var ids []string
+	c := s.DB.C("dockers")
+	find := c.Find(bson.M{})
+	items := find.Iter()
+	for items.Next(&rootobject) {
+		names = append(names, rootobject.SystemInfo.Name)
+		ids = append(ids, rootobject.ID.Hex())
+	}
+	return names, ids
 }
 
 func (s *DockerDaoImpl) UpdateDocker(rootobject Root) error {

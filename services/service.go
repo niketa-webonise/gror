@@ -10,6 +10,7 @@ type IDockerService interface {
 	InsertData(bytevalue []byte) error
 	GetItem(bytevalue []byte) (models.Root, error)
 	UpdateData(bytevalue []byte) error
+	GetList() ([]string, []string)
 }
 
 type DockerServiceImpl struct {
@@ -29,6 +30,11 @@ func (s *DockerServiceImpl) GetItem(bytevalue []byte) (models.Root, error) {
 	json.Unmarshal(bytevalue, &rootobject)
 	rootobject, err := s.DockerDaoImpl.GetDockerItem(rootobject)
 	return rootobject, err
+}
+func (s *DockerServiceImpl) GetList() ([]string, []string) {
+
+	names, ids := s.DockerDaoImpl.GetDockerList()
+	return names, ids
 }
 
 func (s *DockerServiceImpl) UpdateData(bytevalue []byte) error {

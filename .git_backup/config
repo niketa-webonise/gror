@@ -1,0 +1,20 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = git@github.com:niketa-webonise/gror.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[branch "develop"]
+	remote = origin
+	merge = refs/heads/develop
+[branch "feature_save_get_config"]
+	remote = origin
+	merge = refs/heads/feature_save_get_config
+[gui]
+	wmstate = normal
+	geometry = 1535x842+65+24 219 227
