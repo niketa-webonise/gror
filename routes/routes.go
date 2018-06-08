@@ -4,10 +4,12 @@ import (
 	"github.com/gror/servers"
 )
 
+//RouteWrapper  wraps Server struct
 type RouteWrapper struct {
 	Server *servers.Server
 }
 
+//CreateRoute defines the routing with specific methods
 func (r *RouteWrapper) CreateRoute() {
 
 	//new form
