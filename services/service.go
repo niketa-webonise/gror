@@ -6,6 +6,7 @@ import (
 	"github.com/gror/models"
 )
 
+// IDockerService wraps the all method of services
 type IDockerService interface {
 	InsertData(bytevalue []byte) error
 	GetItem(bytevalue []byte) (models.Root, error)
@@ -13,10 +14,12 @@ type IDockerService interface {
 	UpdateData(bytevalue []byte) error
 }
 
+// DockerServiceImpl implements the model
 type DockerServiceImpl struct {
 	DockerDaoImpl models.DockerDao
 }
 
+// InsertData returns the CreateDocker's error
 func (s *DockerServiceImpl) InsertData(bytevalue []byte) error {
 
 	var rootobject models.Root
@@ -24,6 +27,7 @@ func (s *DockerServiceImpl) InsertData(bytevalue []byte) error {
 	return s.DockerDaoImpl.CreateDocker(rootobject)
 }
 
+// GetItem returns the rootobject as well as error if any
 func (s *DockerServiceImpl) GetItem(bytevalue []byte) (models.Root, error) {
 
 	var rootobject models.Root
@@ -31,6 +35,8 @@ func (s *DockerServiceImpl) GetItem(bytevalue []byte) (models.Root, error) {
 	rootobject, err := s.DockerDaoImpl.GetDockerItem(rootobject)
 	return rootobject, err
 }
+
+// GetList returns the array of names and objectid
 func (s *DockerServiceImpl) GetList(bytevalue []byte) ([]string, []string) {
 
 	var rootobject models.Root
@@ -38,6 +44,8 @@ func (s *DockerServiceImpl) GetList(bytevalue []byte) ([]string, []string) {
 	names, objid := s.DockerDaoImpl.GetDockerList(rootobject)
 	return names, objid
 }
+
+// UpdateData returns the UpdateData's error
 func (s *DockerServiceImpl) UpdateData(bytevalue []byte) error {
 
 	var rootobject models.Root

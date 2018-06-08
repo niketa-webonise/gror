@@ -11,12 +11,16 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// tmpl is used to store the all parsed html pages
 var tmpl = template.Must(template.ParseGlob("view/*.html"))
 
+// ProjectNames contains fields that is to be used to return a response from GetDockerCongifList
 type ProjectNames struct {
 	Names []string
 	ObjId []string
 }
+
+// DockerConfigInterface wraps the all methods of controller
 type DockerConfigInterface interface {
 	UpdateDockerConfig() http.HandlerFunc
 	CreateDockerConfig() http.HandlerFunc
@@ -26,15 +30,19 @@ type DockerConfigInterface interface {
 	DockerListForm() http.HandlerFunc
 }
 
+// DockerControllerImpl  implements the all services
 type DockerControllerImpl struct {
 	DockerService services.IDockerService
 }
 
+// DockerListForm  display DockerList page
 func (s *DockerControllerImpl) DockerListForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmpl.ExecuteTemplate(w, "DockerList.html", nil)
 	}
 }
+
+// GetDockerConfigList display the DockerList page data from database and returns ProjectNames object as a response
 func (s *DockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var rootobject models.Root
@@ -52,11 +60,15 @@ func (s *DockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
 
 	}
 }
+
+// DockerForm  display DockerForm page
 func (s *DockerControllerImpl) DockerForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmpl.ExecuteTemplate(w, "DockerForm.html", nil)
 	}
 }
+
+// CreateDockerConfig use in POST request
 func (s *DockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -84,6 +96,7 @@ func (s *DockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 	}
 }
 
+// GetDockerConfig use in GET request for single record
 func (s *DockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var rootobject models.Root
@@ -109,6 +122,8 @@ func (s *DockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 		}
 	}
 }
+
+// UpdateDockerConfig use in PUT request
 func (s *DockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var rootobject models.Root

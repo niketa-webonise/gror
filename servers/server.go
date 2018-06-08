@@ -6,7 +6,8 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
-type ServerDemo struct {
+// DockerServer defines the server with database and router
+type DockerServer struct {
 	Db               *mgo.Database
 	Router           *mux.Router
 	DockerController controllers.DockerConfigInterface

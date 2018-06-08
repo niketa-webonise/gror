@@ -15,16 +15,20 @@ import (
 
 func main() {
 
+	// dbconfig intialize the mongoDB dial and database name
 	dbconfig := &database.DbConfig{
 		Dial:   "mongodb://127.0.0.1:27017/",
 		DbName: "dockerDB",
 	}
+
+	// db intialize the database
 	db, err := dbconfig.Init()
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	sr := &servers.ServerDemo{
+	// sr intialize the DockerServer
+	sr := &servers.DockerServer{
 		Db:     db,
 		Router: mux.NewRouter(),
 		DockerController: &controllers.DockerControllerImpl{
@@ -35,6 +39,7 @@ func main() {
 			},
 		},
 	}
+	//r assigns the server to the RouteWrapper
 	r := &routes.RouteWrapper{
 		Server: sr,
 	}

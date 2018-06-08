@@ -4,10 +4,12 @@ import (
 	"github.com/gror/servers"
 )
 
+// RouteWrapper defines the server
 type RouteWrapper struct {
-	Server *servers.ServerDemo
+	Server *servers.DockerServer
 }
 
+// CreateRoute defines the all routes of docker
 func (s *RouteWrapper) CreateRoute() {
 	s.Server.Router.HandleFunc("/", s.Server.DockerController.DockerForm())
 	s.Server.Router.HandleFunc("/docker/config/new", s.Server.DockerController.CreateDockerConfig()).Methods("POST")
