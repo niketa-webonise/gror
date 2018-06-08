@@ -7,11 +7,11 @@ import (
 
 // Instance defines all variable of Instance which are to be used to read a json file and bson to interact with mongoDB
 type Instance struct {
-	EnvMap              EnvMap        `json:"EnvMap" bson:"EnvMap"`
+	EnvMap              EnvMap        `json:"EnvMap" bson:"EnvMap"` // EnvMap struct type variable which stores the environment map
 	PortMapping         string        `json:"PortMapping" bson:"portMapping"`
 	AuthId              string        `json:"authId" bson:"authId"`
 	HostId              string        `json:"hostId" bson:"hostId"`
-	VolumeMapping       VolumeMapping `json:"volumeMapping" bson:"volumeMapping"`
+	VolumeMapping       VolumeMapping `json:"volumeMapping" bson:"volumeMapping"` // VolumeMapping struct type variable which stores the Volume mapping
 	VolumesFrom         string        `json:"volumesFrom" bson:"volumesFrom"`
 	CommandToBeExecuted string        `json:"commandToBeExecuted" bson:"commandToBeExecuted"`
 	Links               string        `json:"links" bson:"links"`
@@ -35,7 +35,7 @@ type VolumeMapping struct {
 
 // Component defines all variable of Component which are to be used to read a json file and bson to interact with mongoDB
 type Component struct {
-	Instances []Instance `json:"instances" bson:"instances"`
+	Instances []Instance `json:"instances" bson:"instances"` // Stores the all instances
 	Name      string     `json:"name" bson:"name"`
 }
 
@@ -62,17 +62,17 @@ type AuthData struct {
 
 // SystemInfo defines all variable of SystemInfo which are to be used to read a json file and bson to interact with mongoDB
 type SystemInfo struct {
-	GrorVersion string `json:"grorVersion" bson:"grorVersion"`
-	Name        string `json:"name" bson:"name"`
+	GrorVersion string `json:"grorVersion" bson:"grorVersion"` // Holds the system version
+	Name        string `json:"name" bson:"name"`               // Holds the system name
 }
 
 // Root defines all variable of Root which are to be used to read a json file and bson to interact with mongoDB
 type Root struct {
-	ID         bson.ObjectId `json:"id" bson:"_id"`
-	SystemInfo SystemInfo    `json:"systemInfo" bson:"systemInfo"`
-	AuthDatas  []AuthData    `json:"authData" bson:"authData"`
-	Hosts      []Host        `json:"hosts" bson:"hosts"`
-	Components []Component   `json:"components" bson:"components"`
+	ID         bson.ObjectId `json:"id" bson:"_id"`                // Holds the unique id of every record
+	SystemInfo SystemInfo    `json:"systemInfo" bson:"systemInfo"` // SystemInfo struct type variable which stores the SystemInfo
+	AuthDatas  []AuthData    `json:"authData" bson:"authData"`     // Holds the all AuthDatas info
+	Hosts      []Host        `json:"hosts" bson:"hosts"`           // Holds the all Hosts info
+	Components []Component   `json:"components" bson:"components"` // Holds the all Components info
 }
 
 // DockerDao wraps the all method which are interact with database
