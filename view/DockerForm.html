@@ -373,16 +373,12 @@ $(document).ready(function(){
         components.push(component)
     })
     jsonObject.components = components;
-    $("#result").text("Successfully added");
-    jQuery.ajax({
+    $.ajax({
         url: '/docker/config/new',
         type: "POST",
         data:JSON.stringify(jsonObject),
         dataType: "json",
-        success: function(data) {
-        console.log(data)
-        }
-});
+    }, window.location.href = "/docker/config/list");
 })
 })
    </script>
@@ -527,8 +523,7 @@ $(document).ready(function(){
        <a href="javascript:void(0);" onclick="removeComponent();">Remove Component</a>
      </p>
     <div class="clearfix">
-      <button type="submit" class="signupbtn">Sign Up</button>
-       <button type="button" class="cancelbtn">Cancel</button>
+      <button type="submit" class="signupbtn">Insert</button>
     </div>
     <div id = "result"></div>
   </div>
