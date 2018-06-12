@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 
 	"net/http"
@@ -35,6 +36,8 @@ type DockerControllerImpl struct {
 //GetDockerConfigForm method execute the template "dockerconfig.gtpl".
 func (s *DockerControllerImpl) GetDockerConfigForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		//names, ids := s.DockerService.GetList()
+		//configData := &ConfigData{Names: names, ID: ids}
 		t, _ := template.ParseFiles("./views/dockerconfig.gtpl")
 		t.Execute(w, nil)
 	}
@@ -81,7 +84,9 @@ func (s *DockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 			return
 		} else {
 			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprintln(w, "{\"message\":\"Successfully created!\"}")
 		}
+
 	}
 }
 
@@ -139,5 +144,6 @@ func (s *DockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
 
 			http.Error(w, "Invalid Id bad request", http.StatusBadRequest)
 		}
+		fmt.Fprintln(w, "{\"message\":\"Successfully updated!\"}")
 	}
 }

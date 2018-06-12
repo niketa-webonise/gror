@@ -437,10 +437,14 @@ $(document).ready(function(){
                 url: 'http://localhost:8080/docker/config',
                 contentType : "application/json",
                 type: "POST",
-                data:JSON.stringify(jsonObject),
                 dataType: "json",
-                success: function(success) {
-                console.log(success)
+                data:JSON.stringify(jsonObject),
+                success: function(result) {
+                alert(result.message)
+                window.location.href="/docker/config"
+                },
+                error: function(xhr,type,exception){
+                    alert("ajax error response type"+type)
                 }
       });
     })

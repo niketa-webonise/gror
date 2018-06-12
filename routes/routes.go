@@ -12,7 +12,7 @@ type RouteWrapper struct {
 //CreateRoute defines the routing with specific methods
 func (r *RouteWrapper) CreateRoute() {
 
-	//new form
+	//get new form
 	r.Server.Router.HandleFunc("/docker/config/new", r.Server.DockerController.GetDockerConfigForm()).Methods("GET")
 	//get all items list
 	r.Server.Router.HandleFunc("/docker/config", r.Server.DockerController.GetDockerConfigList()).Methods("GET")

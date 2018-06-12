@@ -266,8 +266,11 @@ $(document).ready(function() {
                 type: "PUT",
                 data:JSON.stringify(jsonObject),
                 dataType: "json",
-                success: function(success) {
-                console.log(success)
+                success: function(result) {
+                alert(result.message)
+                },
+                error: function(xhr,type,exception){
+                    alert("ajax error response type"+type)
                 }
       });
         
