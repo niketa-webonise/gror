@@ -1,4 +1,4 @@
-#Gror
+# Gror
 
 Currently, Gror provides the following functionality:
 
@@ -11,13 +11,13 @@ GET: Fetch all data according to the project name
 PUT: Accept data through form, Converting forms data to json and bson format and update all details of the project 
 
 
-##Getting Started
+## Getting Started
 
-####Prerequisites
+#### Prerequisites
 
 First you need to install gopkg.in/mgo.v2 to setup mongoDB drivers and gorilla/mux to set up your router
 
-#####Installing prerequisites
+##### Installing prerequisites
 
 Before installing below mongoDB driver, your system should have installation of [mongoDB](https://www.howtoforge.com/tutorial/install-mongodb-on-ubuntu/).
 
@@ -27,7 +27,7 @@ go get gopkg.in/mgo.v2
 go get -u github.com/gorilla/mux
 ```
 
-##Examples
+## Examples
 
 Define the database name by intializing the Dbconfig struct with Dial string and database name 
 
@@ -89,7 +89,7 @@ func (s *RouteWrapper) CreateRoute() {
 
 }
 ```
-####Different API request
+#### Different API request
 
 > Insert data(POST): localhost:9090
 
