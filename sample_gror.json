@@ -1,0 +1,198 @@
+{
+    "id":"5b28b442a90362768113e47e",
+	"systemInfo": {
+        "grorVersion": "1.0.0",
+        "name": "cocooncam"
+    },
+    "authData": [
+        {
+            "password": "",
+            "key": "update-your-auth-key",
+            "username": "",
+            "auth": "",
+            "email": ""
+        }
+    ],
+    "hosts": [
+        {
+            "protocol": "",
+            "apiVersion": "",
+            "hostType": "TCP",
+            "dockerVersion": null,
+            "alias": "",
+            "certPathForDockerDaemon":"",
+            "ip": "",
+            "dockerPort": ""
+        },
+	{
+            "protocol": "",
+            "apiVersion":"",
+            "hostType": "",
+            "dockerVersion": "",
+            "alias": "",
+            "certPathForDockerDaemon": "",
+            "ip": "",
+            "dockerPort": ""
+        },
+	  {
+            "protocol": "http",
+            "apiVersion": null,
+            "hostType": "TCP",
+            "dockerVersion": null,
+            "alias": "api-vm-1",
+            "certPathForDockerDaemon": null,
+            "ip": "54.67.95.47",
+            "dockerPort": "2376"
+        },{
+            "protocol": "",
+            "apiVersion": "",
+            "hostType": "",
+            "dockerVersion": "",
+            "alias": "",
+            "certPathForDockerDaemon": "",
+            "ip": "",
+            "dockerPort": ""
+        }
+    ],
+ "components": [
+        {
+            "instances": [
+        {
+                    "envMap": {
+                        "CASSANDRA_BROADCAST_ADDRESS":"",
+                        "CASSANDRA_SEEDS":""
+                    },
+                    "portMapping": "",
+                    "authId": "update-your-auth-key",
+                    "hostId": "cassandra-vm-1",
+                    "volumeMapping": {
+                        "/home/ubuntu/cass-data": "/var/lib/cassandra",
+                        "/home/ubuntu/cass-config":"/etc/cassandra"
+                    },
+                    "volumesFrom": "",
+                    "commandToBeExecuted": "",
+                    "links": "",
+                    "imageName": "cassandra",
+                    "tag": "latest",
+                    "hostsMapping": "",
+                    "name": "seed.cass.cc.com"
+                }	      
+	 , {
+                    "envMap": {
+                        "CASSANDRA_BROADCAST_ADDRESS":"",
+                        "CASSANDRA_SEEDS":""
+		    },
+                    "portMapping": "",
+                    "authId": "",
+                    "hostId": "",
+                    "volumeMapping": {
+                        "/home/ubuntu/cass-data": "/var/lib/cassandra",
+			"/home/ubuntu/cass-config":"/etc/cassandra"
+                    },
+                    "volumesFrom": "",
+                    "commandToBeExecuted": "",
+                    "links": "",
+                    "imageName": "",
+                    "tag": "",
+                    "hostsMapping": "",
+                    "name": ""
+                },
+		  {
+                    "envMap": {
+                        "CASSANDRA_BROADCAST_ADDRESS":"",
+                        "CASSANDRA_SEEDS":""
+                    },
+                    "portMapping": "",
+                    "authId": "update-your-auth-key",
+                    "hostId": "",
+                    "volumeMapping": {
+                        "/home/ubuntu/cass-data": "/var/lib/cassandra",
+                        "/home/ubuntu/cass-config":"/etc/cassandra"
+                        },
+                    "volumesFrom": "",
+                    "commandToBeExecuted": "",
+                    "links": "",
+                    "imageName": "cassandra",
+                    "tag": "latest",
+                    "hostsMapping": "",
+                    "name": ""
+                }
+            ],
+            "name": ""
+	},
+	{
+           "instances": [
+               {
+                   "envMap": {"CASSANDRA_BROADCAST_ADDRESS":"",
+                    "CASSANDRA_SEEDS":""},
+                   "portMapping": "",
+                   "authId": "update-your-auth-key",
+                   "hostId": "api-vm-1",
+                   "volumeMapping": {
+                        "/home/ubuntu/cass-data": "/var/lib/cassandra",
+                        "/home/ubuntu/cass-config":"/etc/cassandra"
+                        },
+                   "volumesFrom": "",
+                   "commandToBeExecuted": "",
+                   "links": "",
+                   "imageName": "cocooncam/api",
+                   "tag": "latest",
+                   "hostsMapping":"",
+                   "name": "api.cocoon.com"
+               }
+            ]
+        },
+
+{
+            "instances": [
+                {
+                    "envMap": {
+                        "CASSANDRA_BROADCAST_ADDRESS":"",
+                        "CASSANDRA_SEEDS":""
+        
+                    },
+                    "portMapping": "",
+                    "authId": "update-your-auth-key",
+                    "hostId": "cassandra-vm-1",
+                    "volumeMapping": {
+                        "/home/ubuntu/cass-data": "/var/lib/cassandra",
+                        "/home/ubuntu/cass-config":"/etc/cassandra"
+                    },
+                    "volumesFrom": "",
+                    "commandToBeExecuted": null,
+                    "links":"",
+                    "imageName": "tutum/dockup",
+                    "tag": "latest",
+                    "hostsMapping": "",
+                    "name": "prod.seed.cassie.backup.com"
+                }
+            ],
+            "name": "prod-cassie-seed-backup"
+        },
+	  {
+                    "instances": [
+                        {
+                            "envMap": {
+                                "CASSANDRA_BROADCAST_ADDRESS":"",
+                                "CASSANDRA_SEEDS":""
+                            },
+                            "portMapping": "",
+                            "authId": "update-your-auth-key",
+                            "hostId": "cassandra-vm-2",
+                            "volumeMapping": {
+                                "/home/ubuntu/cass-data": "/var/lib/cassandra",
+                        "/home/ubuntu/cass-config":"/etc/cassandra"
+                            },
+                            "volumesFrom": "",
+                            "commandToBeExecuted": null,
+                            "links": "",
+                            "imageName": "tutum/dockup",
+                            "tag": "latest",
+                            "hostsMapping": "",
+                            "name": "2.cassie.backup.com"
+                        }
+                    ],
+                    "name": "prod-cassie-2-backup"
+                }
+    ]
+}

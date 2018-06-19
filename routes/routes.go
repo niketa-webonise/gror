@@ -13,13 +13,13 @@ type RouteWrapper struct {
 func (r *RouteWrapper) CreateRoute() {
 
 	//get new form
-	r.Server.Router.HandleFunc("/docker/config/new", r.Server.DockerController.GetDockerConfigForm()).Methods("GET")
+	r.Server.Router.HandleFunc("/docker/config/new", r.Server.GetDockerFormController.GetDockerConfigForm()).Methods("GET")
 	//get all items list
-	r.Server.Router.HandleFunc("/docker/config", r.Server.DockerController.GetDockerConfigList()).Methods("GET")
+	r.Server.Router.HandleFunc("/docker/config", r.Server.GetDockerListController.GetDockerConfigList()).Methods("GET")
 	//create new item (ajax)
-	r.Server.Router.HandleFunc("/docker/config", r.Server.DockerController.CreateDockerConfig()).Methods("POST")
+	r.Server.Router.HandleFunc("/docker/config", r.Server.CreateDockerController.CreateDockerConfig()).Methods("POST")
 	//get update form for object with id {id}
-	r.Server.Router.HandleFunc("/docker/config/{id}", r.Server.DockerController.GetDockerConfig()).Methods("GET")
+	r.Server.Router.HandleFunc("/docker/config/{id}", r.Server.GetDockerController.GetDockerConfig()).Methods("GET")
 	//update the data (ajax)
-	r.Server.Router.HandleFunc("/docker/config/{id}", r.Server.DockerController.UpdateDockerConfig()).Methods("PUT")
+	r.Server.Router.HandleFunc("/docker/config/{id}", r.Server.UpdateDockerController.UpdateDockerConfig()).Methods("PUT")
 }

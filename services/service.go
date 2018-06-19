@@ -6,48 +6,75 @@ import (
 	"github.com/gror/models"
 )
 
-//IDockerService interface wraps all methods of services
-type IDockerService interface {
+type InsertDataInerface interface {
 	InsertData(bytevalue []byte) error
+}
+
+type GetItemInterface interface {
 	GetItem(bytevalue []byte) (models.Root, error)
+}
+
+type UpdateDataInterface interface {
 	UpdateData(bytevalue []byte) error
+}
+
+type GetListInterface interface {
 	GetList() ([]string, []string)
 }
 
-//DockerServiceImpl defines DockerDaoImpl which is of type DockerDao interface
-type DockerServiceImpl struct {
-	DockerDaoImpl models.DockerDao
+type InsertDataImpl struct {
+	InsertDockerDaoImpl models.CreateDockerInterface
+}
+
+type GetItemImpl struct {
+	GetDockerDaoImpl models.GetDockerItemInterface
+}
+
+type GetListImpl struct {
+	GetListDockerDaoImpl models.GetDockerListInterface
+}
+
+type UpdateDataImpl struct {
+	UpdateDockerDaoImpl models.UpdateDockerInterface
 }
 
 /*InsertData method unmarshal the rootobject and calls the interface method CreateDocker
 that  insert the rootobject in database*/
-func (s *DockerServiceImpl) InsertData(bytevalue []byte) error {
+func (s *InsertDataImpl) InsertData(bytevalue []byte) error {
 	var rootobject models.Root
-	json.Unmarshal(bytevalue, &rootobject)
-	return s.DockerDaoImpl.CreateDocker(rootobject)
+	err := json.Unmarshal(bytevalue, &rootobject)
+	if err != nil {
+		return err
+	}
+	return s.InsertDockerDaoImpl.CreateDocker(rootobject)
 }
 
 /*GetItem method unmarshal the rootobject and calls the interface method GetDockerItem
 that  get result by its ID*/
-func (s *DockerServiceImpl) GetItem(bytevalue []byte) (models.Root, error) {
+func (s *GetItemImpl) GetItem(bytevalue []byte) (models.Root, error) {
 	var rootobject models.Root
-	json.Unmarshal(bytevalue, &rootobject)
-	rootobject, err := s.DockerDaoImpl.GetDockerItem(rootobject)
+	err := json.Unmarshal(bytevalue, &rootobject)
+	if err != nil {
+		return rootobject, err
+	}
+	rootobject, err = s.GetDockerDaoImpl.GetDockerItem(rootobject)
 	return rootobject, err
 }
 
 /*GetList method return names and ids from the database*/
-func (s *DockerServiceImpl) GetList() ([]string, []string) {
-
-	names, ids := s.DockerDaoImpl.GetDockerList()
-	return names, ids
+func (s *GetListImpl) GetList() ([]string, []string, error) {
+	names, ids := s.GetListDockerDaoImpl.GetDockerList()
+	return names, ids, nil
 }
 
 /*UpdateData method unmarshal the rootobject and calls the interface method UpdateDocker
 that  perform updates in database*/
-func (s *DockerServiceImpl) UpdateData(bytevalue []byte) error {
+func (s *UpdateDataImpl) UpdateData(bytevalue []byte) error {
 
 	var rootobject models.Root
-	json.Unmarshal(bytevalue, &rootobject)
-	return s.DockerDaoImpl.UpdateDocker(rootobject)
+	err := json.Unmarshal(bytevalue, &rootobject)
+	if err != nil {
+		return err
+	}
+	return s.UpdateDockerDaoImpl.UpdateDocker(rootobject)
 }

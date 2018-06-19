@@ -75,13 +75,29 @@ type Root struct {
 	Components []Component   `json:"components" bson:"components"` //Components field is of type array Component
 }
 
-//DockerDao interface implements all methods related to database
-type DockerDao interface {
+type CreateDockerInterface interface {
 	CreateDocker(rootobject Root) error
+}
+
+type GetDockerItemInterface interface {
 	GetDockerItem(rootobject Root) (Root, error)
+}
+
+type UpdateDockerInterface interface {
 	UpdateDocker(rootobject Root) error
+}
+
+type GetDockerListInterface interface {
 	GetDockerList() ([]string, []string)
 }
+
+//DockerDao interface implements all methods related to database
+// type DockerDao interface {
+// 	CreateDocker(rootobject Root) error
+// 	GetDockerItem(rootobject Root) (Root, error)
+// 	UpdateDocker(rootobject Root) error
+// 	GetDockerList() ([]string, []string)
+// }
 
 //DockerDaoImpl wraps mongoDB Database
 type DockerDaoImpl struct {

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 
@@ -19,36 +20,67 @@ type ConfigData struct {
 	ID    []string //The unique Id store for each record in database
 }
 
-//DockerConfigInterface wraps all methods of controller.
-type DockerConfigInterface interface {
+//UpdateDockerConfigInterface interface
+type UpdateDockerConfigInterface interface {
 	UpdateDockerConfig() http.HandlerFunc
+}
+
+//CreateDockerConfigInterface interface
+type CreateDockerConfigInterface interface {
 	CreateDockerConfig() http.HandlerFunc
+}
+
+//GetDockerConfigInterface interface
+type GetDockerConfigInterface interface {
 	GetDockerConfig() http.HandlerFunc
+}
+
+//GetDockerConfigFormInterface interface
+type GetDockerConfigFormInterface interface {
 	GetDockerConfigForm() http.HandlerFunc
+}
+
+//GetDockerConfigListInterface interface
+type GetDockerConfigListInterface interface {
 	GetDockerConfigList() http.HandlerFunc
 }
 
-//DockerControllerImpl defines DockerService which is of type IDockerService interface.
-type DockerControllerImpl struct {
-	DockerService services.IDockerService
+type UpdateDockerControllerImpl struct {
+	UpdateDockerService services.UpdateDataInterface
+}
+
+type CreateDockerControllerImpl struct {
+	CreateDockerService services.InsertDataInerface
+}
+
+type GetDockerItemControllerImpl struct {
+	GetDockerService services.GetItemInterface
+}
+
+type GetDockerListImpl struct {
+	GetDockerListService services.GetListInterface
+}
+
+type GetDockerConfigFormImpl struct {
 }
 
 //GetDockerConfigForm method execute the template "dockerconfig.gtpl".
-func (s *DockerControllerImpl) GetDockerConfigForm() http.HandlerFunc {
+func (s *GetDockerConfigFormImpl) GetDockerConfigForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		//names, ids := s.DockerService.GetList()
-		//configData := &ConfigData{Names: names, ID: ids}
-		t, _ := template.ParseFiles("./views/dockerconfig.gtpl")
+		t, err := template.ParseFiles("./views/dockerconfig.gtpl")
+		if err != nil {
+			fmt.Println(errors.New("unable to execute the template"))
+		}
 		t.Execute(w, nil)
 	}
 }
 
 /*GetDockerConfigList method execute the template "dockerlist.gtpl"
 and in response sending the struct that contains names and ids.*/
-func (s *DockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
+func (s *GetDockerListImpl) GetDockerConfigList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		names, ids := s.DockerService.GetList()
+		names, ids := s.GetDockerListService.GetList()
 
 		configData := &ConfigData{Names: names, ID: ids}
 
@@ -60,7 +92,7 @@ func (s *DockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
 }
 
 //CreateDockerConfig method get called on POST request and return response in Header
-func (s *DockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
+func (s *CreateDockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var rootobject models.Root
@@ -78,7 +110,7 @@ func (s *DockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 			return
 		}
 
-		err = s.DockerService.InsertData(marshalData)
+		err = s.CreateDockerService.InsertData(marshalData)
 		if err != nil {
 			http.Error(w, "The request could not be completed because of a conflict", http.StatusConflict)
 			return
@@ -91,7 +123,7 @@ func (s *DockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 }
 
 //GetDockerConfig method get called on GET request
-func (s *DockerControllerImpl) GetDockerConfig() http.HandlerFunc {
+func (s *GetDockerItemControllerImpl) GetDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var rootobject models.Root
 		vars := mux.Vars(req)
@@ -103,7 +135,8 @@ func (s *DockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 				return
 			}
 
-			rootobject, err := s.DockerService.GetItem(marshalData)
+			rootobject, err := s.GetDockerService.GetItem(marshalData)
+
 			t, _ := template.ParseFiles("./views/dockerconfigDetails.gtpl")
 			t.ExecuteTemplate(w, "dockerconfigDetails.gtpl", rootobject)
 			if err != nil {
@@ -117,7 +150,7 @@ func (s *DockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 }
 
 /*UpdateDockerConfig method get called on PUT request*/
-func (s *DockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
+func (s *UpdateDockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var rootobject models.Root
 		err := json.NewDecoder(r.Body).Decode(&rootobject)
@@ -135,7 +168,7 @@ func (s *DockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
 				http.Error(w, "Unprocessable Entity error", http.StatusUnprocessableEntity)
 				return
 			}
-			err = s.DockerService.UpdateData(marshalData)
+			err = s.UpdateDockerService.UpdateData(marshalData)
 			if err != nil {
 				http.Error(w, "Record not found of this ID:"+params["id"]+" Failed to update", http.StatusNotFound)
 				return
