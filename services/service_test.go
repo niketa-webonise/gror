@@ -43,34 +43,30 @@ var testCaseCreateFail = []struct {
 }
 
 var testCaseCreateSuccess = []struct {
-	Url              string
-	Message          string
-	Name             string
-	expectErr        error
-	serviceInterface CreateSuccessImplTest
+	Url       string
+	Message   string
+	Name      string
+	expectErr error
 }{
 	{
-		Url:              "../sample_gror.json",
-		Message:          "successfully unmarshall and saved in db",
-		Name:             "valid data and successfully saved in db",
-		expectErr:        nil,
-		serviceInterface: CreateSuccessImplTest{},
+		Url:       "../sample_gror.json",
+		Message:   "successfully unmarshall and saved in db",
+		Name:      "valid data and successfully saved in db",
+		expectErr: nil,
 	},
 }
 
 var testCaseGetitemFail = []struct {
-	Url              string
-	Message          string
-	Name             string
-	expectErr        error
-	serviceInterface GetItemFailImplTest
+	Url       string
+	Message   string
+	Name      string
+	expectErr error
 }{
 	{
-		Url:              "../sample_gror.json",
-		Message:          "successfully unmarshall",
-		Name:             "valid data but fails to get the item",
-		expectErr:        errors.New("Failed to get the item"),
-		serviceInterface: GetItemFailImplTest{},
+		Url:       "../sample_gror.json",
+		Message:   "successfully unmarshall",
+		Name:      "valid data but fails to get the item",
+		expectErr: errors.New("Failed to get the item"),
 	},
 }
 
@@ -185,7 +181,6 @@ func (s GetListSuccessImplTest) GetDockerList() ([]string, []string) {
 }
 
 func TestInsertData(t *testing.T) {
-	var rootobject models.Root
 
 	r := &InsertDataImpl{
 		InsertDockerDaoImpl: CreateFailImplTest{},
@@ -198,8 +193,6 @@ func TestInsertData(t *testing.T) {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
-
 		actualErr := r.InsertData(raw)
 		if gror.expectErr.Error() != actualErr.Error() {
 			panic("test case failed for " + gror.Name)
@@ -216,12 +209,9 @@ func TestInsertData(t *testing.T) {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
-
 		actualErr := r.InsertData(raw)
 
 		if gror.expectErr != actualErr {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
 			panic("test case failed for " + gror.Name)
 		}
 	}
@@ -237,8 +227,6 @@ func TestInsertData(t *testing.T) {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
-
 		actualErr := r.InsertData(raw)
 
 		if gror.expectErr.Error() != actualErr.Error() {
@@ -249,7 +237,6 @@ func TestInsertData(t *testing.T) {
 }
 
 func TestGetItem(t *testing.T) {
-	var rootobject models.Root
 
 	r := &GetItemImpl{
 		GetDockerDaoImpl: GetItemFailImplTest{},
@@ -262,8 +249,6 @@ func TestGetItem(t *testing.T) {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
-
 		_, actualErr := r.GetItem(raw)
 		if gror.expectErr.Error() != actualErr.Error() {
 			panic("test case failed for " + gror.Name)
@@ -280,8 +265,6 @@ func TestGetItem(t *testing.T) {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
-
 		_, actualErr := r.GetItem(raw)
 
 		if gror.expectErr != actualErr {
@@ -301,8 +284,6 @@ func TestGetItem(t *testing.T) {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
-
 		_, actualErr := r.GetItem(raw)
 
 		if gror.expectErr.Error() != actualErr.Error() {

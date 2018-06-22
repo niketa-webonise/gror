@@ -1,24 +1,38 @@
 package controllers
 
 import (
+	"net/http/httptest"
 	"testing"
 
 	"github.com/gorilla/mux"
-
-	"github.com/gror/servers"
-	"github.com/gror/services"
 )
 
+type CreateDockerImplTest struct {
+}
+
+var testCaseCreateFail = []struct {
+	URL       string
+	Message   string
+	Name      string
+	expectErr error
+}{
+	{
+		URL:       "/docker/config",
+		Message:   "successfully created",
+		expectErr: nil,
+	},
+}
+
+func (s CreateDockerImplTest) CreateDockerConfig() error {
+	return nil
+
+}
 func TestCreateDockerConfig(t *testing.T) {
 
-	s := &servers.Server{
-		DB:                  dbwrapper,
-		Router:              mux.NewRouter(),
-		CreateDockerService: &services.InsertDataImpl{},
+	router := mux.NewRouter()
+	ts := httptest.NewServer(router)
+	defer ts.Close()
 
-		UpdateDockerService: &services.UpdateDataImpl{},
+	r := &CreateDockerControllerImpl{},
 
-		GetDockerService:     &services.GetItemImpl{},
-		GetDockerListService: &services.GetListImpl{},
-	}
 }
