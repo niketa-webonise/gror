@@ -80,11 +80,17 @@ and in response sending the struct that contains names and ids.*/
 func (s *GetDockerListImpl) GetDockerConfigList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		names, ids := s.GetDockerListService.GetList()
+		names, ids, err := s.GetDockerListService.GetList()
+		if err != nil {
+			fmt.Println(errors.New("Unable to get Ids and names"))
+		}
 
 		configData := &ConfigData{Names: names, ID: ids}
 
-		t, _ := template.ParseFiles("./views/dockerlist.gtpl")
+		t, err := template.ParseFiles("./views/dockerlist.gtpl")
+		if err != nil {
+			fmt.Println(errors.New("unable to execute the template"))
+		}
 
 		t.ExecuteTemplate(w, "dockerlist.gtpl", configData)
 
@@ -127,8 +133,10 @@ func (s *GetDockerItemControllerImpl) GetDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var rootobject models.Root
 		vars := mux.Vars(req)
+
 		if bson.IsObjectIdHex(vars["id"]) {
 			rootobject.ID = bson.ObjectIdHex(vars["id"])
+
 			marshalData, unmarshalErr := json.Marshal(rootobject)
 			if unmarshalErr != nil {
 				http.Error(w, "Unprocessable Entity error", http.StatusUnprocessableEntity)
@@ -137,7 +145,7 @@ func (s *GetDockerItemControllerImpl) GetDockerConfig() http.HandlerFunc {
 
 			rootobject, err := s.GetDockerService.GetItem(marshalData)
 
-			t, _ := template.ParseFiles("./views/dockerconfigDetails.gtpl")
+			t, err := template.ParseFiles("./views/dockerconfigDetails.gtpl")
 			t.ExecuteTemplate(w, "dockerconfigDetails.gtpl", rootobject)
 			if err != nil {
 				http.Error(w, "Record not found of this ID:"+vars["id"], http.StatusNotFound)
