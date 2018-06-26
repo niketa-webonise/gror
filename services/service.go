@@ -19,7 +19,7 @@ type UpdateDataInterface interface {
 }
 
 type GetListInterface interface {
-	GetList() ([]string, []string)
+	GetList() ([]string, []string, error)
 }
 
 type InsertDataImpl struct {

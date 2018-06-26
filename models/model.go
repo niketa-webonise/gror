@@ -68,7 +68,7 @@ type SystemInfo struct {
 
 //Root is outermost container that contains SystemInfo
 type Root struct {
-	ID         bson.ObjectId `json:"id" bson:"_id"`
+	ID         bson.ObjectId `json:"id" bson:"_id",omitempty`
 	SystemInfo SystemInfo    `json:"systemInfo" bson:"systemInfo"` //SystemInfo field is of type SystemInfo
 	AuthDatas  []AuthData    `json:"authData" bson:"authData"`     //AuthDatas field is of type AuthData array
 	Hosts      []Host        `json:"hosts" bson:"hosts"`           //Hosts field is of type Host array
@@ -90,14 +90,6 @@ type UpdateDockerInterface interface {
 type GetDockerListInterface interface {
 	GetDockerList() ([]string, []string)
 }
-
-//DockerDao interface implements all methods related to database
-// type DockerDao interface {
-// 	CreateDocker(rootobject Root) error
-// 	GetDockerItem(rootobject Root) (Root, error)
-// 	UpdateDocker(rootobject Root) error
-// 	GetDockerList() ([]string, []string)
-// }
 
 //DockerDaoImpl wraps mongoDB Database
 type DockerDaoImpl struct {

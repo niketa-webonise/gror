@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"log"
 
 	"net/http"
 
@@ -89,11 +90,9 @@ func (s *GetDockerListImpl) GetDockerConfigList() http.HandlerFunc {
 
 		t, err := template.ParseFiles("./views/dockerlist.gtpl")
 		if err != nil {
-			fmt.Println(errors.New("unable to execute the template"))
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		}
-
 		t.ExecuteTemplate(w, "dockerlist.gtpl", configData)
-
 	}
 }
 
@@ -131,9 +130,9 @@ func (s *CreateDockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 //GetDockerConfig method get called on GET request
 func (s *GetDockerItemControllerImpl) GetDockerConfig() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
+
 		var rootobject models.Root
 		vars := mux.Vars(req)
-
 		if bson.IsObjectIdHex(vars["id"]) {
 			rootobject.ID = bson.ObjectIdHex(vars["id"])
 
@@ -144,8 +143,19 @@ func (s *GetDockerItemControllerImpl) GetDockerConfig() http.HandlerFunc {
 			}
 
 			rootobject, err := s.GetDockerService.GetItem(marshalData)
+			if err != nil {
+				http.Error(w, "Bad Request", http.StatusBadRequest)
+				return
+			}
 
-			t, err := template.ParseFiles("./views/dockerconfigDetails.gtpl")
+			//t, err := template.ParseFiles("./views/dockerconfigDetails.gtpl")
+			t, err := template.ParseFiles("/home/webonise/go/src/github.com/gror/views/dockerconfigDetails.gtpl")
+			if err != nil {
+				log.Fatal(err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
 			t.ExecuteTemplate(w, "dockerconfigDetails.gtpl", rootobject)
 			if err != nil {
 				http.Error(w, "Record not found of this ID:"+vars["id"], http.StatusNotFound)

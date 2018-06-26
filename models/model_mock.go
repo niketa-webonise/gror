@@ -7,6 +7,7 @@ import (
 
 //MockedDockerDaoImpl empty struct
 type MockedDockerDaoImpl struct {
+	
 }
 
 //GetDockerList method
@@ -17,6 +18,7 @@ func (m *MockedDockerDaoImpl) GetDockerList() ([]string, []string) {
 	return names, ids
 }
 
+//CreateDocker
 func (s *MockedDockerDaoImpl) CreateDocker(rootobject Root) error {
 	return errors.New("Test_create")
 }
