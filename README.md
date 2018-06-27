@@ -100,7 +100,7 @@ func (s *RouteWrapper) CreateRoute() {
 > Update single project details: localhost:9191/docker/config/{id}
 
 
-##Testing a services with gorilla/mux
+## Testing a services with gorilla/mux
 
 Define test cases related to services like this
 
@@ -157,7 +157,7 @@ func TestInsertData(t *testing.T) {
 	}
 }
 ```
-##Running the tests
+## Running the tests
 
 To run the tests from services directory simply execute:
 
