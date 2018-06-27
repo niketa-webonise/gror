@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
+	"os"
 
 	"net/http"
 
@@ -65,10 +65,13 @@ type GetDockerListImpl struct {
 type GetDockerConfigFormImpl struct {
 }
 
+var Path = os.Getenv("GO_PATH")
+
 //GetDockerConfigForm method execute the template "dockerconfig.gtpl".
 func (s *GetDockerConfigFormImpl) GetDockerConfigForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		t, err := template.ParseFiles("./views/dockerconfig.gtpl")
+		Path := os.Getenv("GO_PATH")
+		t, err := template.ParseFiles(Path + "views/dockerconfig.gtpl")
 		if err != nil {
 			fmt.Println(errors.New("unable to execute the template"))
 		}
@@ -88,9 +91,10 @@ func (s *GetDockerListImpl) GetDockerConfigList() http.HandlerFunc {
 
 		configData := &ConfigData{Names: names, ID: ids}
 
-		t, err := template.ParseFiles("./views/dockerlist.gtpl")
+		t, err := template.ParseFiles(Path + "views/dockerlist.gtpl")
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
 		}
 		t.ExecuteTemplate(w, "dockerlist.gtpl", configData)
 	}
@@ -144,23 +148,18 @@ func (s *GetDockerItemControllerImpl) GetDockerConfig() http.HandlerFunc {
 
 			rootobject, err := s.GetDockerService.GetItem(marshalData)
 			if err != nil {
-				http.Error(w, "Bad Request", http.StatusBadRequest)
-				return
-			}
-
-			//t, err := template.ParseFiles("./views/dockerconfigDetails.gtpl")
-			t, err := template.ParseFiles("/home/webonise/go/src/github.com/gror/views/dockerconfigDetails.gtpl")
-			if err != nil {
-				log.Fatal(err)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-
-			t.ExecuteTemplate(w, "dockerconfigDetails.gtpl", rootobject)
-			if err != nil {
 				http.Error(w, "Record not found of this ID:"+vars["id"], http.StatusNotFound)
 				return
 			}
+
+			Path = os.Getenv("GO_PATH")
+
+			t, err := template.ParseFiles(Path + "views/dockerconfigDetails.gtpl")
+			if err != nil {
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			t.ExecuteTemplate(w, "dockerconfigDetails.gtpl", rootobject)
 		} else {
 			http.Error(w, "Invalid Id bad request", http.StatusBadRequest)
 		}
@@ -176,6 +175,7 @@ func (s *UpdateDockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
 			http.Error(w, "Unprocessable Entity error", http.StatusUnprocessableEntity)
 			return
 		}
+
 		params := mux.Vars(r)
 
 		if bson.IsObjectIdHex(params["id"]) {
@@ -192,7 +192,6 @@ func (s *UpdateDockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
 				return
 			}
 		} else {
-
 			http.Error(w, "Invalid Id bad request", http.StatusBadRequest)
 		}
 		fmt.Fprintln(w, "{\"message\":\"Successfully updated!\"}")

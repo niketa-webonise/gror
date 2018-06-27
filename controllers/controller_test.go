@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -13,8 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gror/models"
 )
-
-var testTemplate *template.Template
 
 type CreateDockerFailImplTest struct {
 }
@@ -35,6 +32,7 @@ type GetListSuccessImplTest struct {
 
 type GetListFailImplTest struct {
 }
+
 type UpdateIDFullSuccessImpl struct {
 }
 
@@ -54,7 +52,7 @@ var testCaseCreateFail = []struct {
 	{
 		Method:       "POST",
 		URL:          "/docker/config",
-		Message:      "unprocessable entity",
+		Message:      "Unprocessable Entity error",
 		JSONBody:     "{\"systemInfo\": {\"grorVersion\": \"1.0.0\",\"name\": \"cocooncam\" }",
 		expectStatus: 422,
 	},
@@ -69,21 +67,9 @@ var testCaseCreateSuccess = []struct {
 	{
 		Method:       "POST",
 		URL:          "/docker/config",
-		Message:      "successfully created",
+		Message:      "{\"message\":\"Successfully created!\"}",
 		JSONBody:     "{\"systemInfo\": {\"grorVersion\": \"1.0.0\",\"name\": \"cocooncam\"} }",
 		expectStatus: 200,
-	},
-}
-
-var testCaseGetItemIDSuccess = []struct {
-	Method       string
-	URL          string
-	expectStatus int
-}{
-	{
-		Method:       "GET",
-		URL:          "/docker/config/5b28b442a90362768113e47e",
-		expectStatus: 400,
 	},
 }
 
@@ -91,12 +77,14 @@ var testCaseGetItemIDFail = []struct {
 	ID           string
 	Method       string
 	URL          string
+	Message      string
 	expectStatus int
 }{
 	{
 		ID:           "1100",
 		Method:       "GET",
 		URL:          "/docker/config/1100",
+		Message:      "Invalid Id bad request",
 		expectStatus: 400,
 	},
 }
@@ -111,18 +99,6 @@ var testCaseGetItemFullSuccess = []struct {
 		ID:           "5b28b442a90362768113e47e",
 		Method:       "GET",
 		URL:          "/docker/config/5b28b442a90362768113e47e",
-		expectStatus: 200,
-	},
-}
-
-var testCaseSuccessDockerList = []struct {
-	Method       string
-	URL          string
-	expectStatus int
-}{
-	{
-		Method:       "GET",
-		URL:          "/docker/config",
 		expectStatus: 200,
 	},
 }
@@ -181,17 +157,24 @@ var testCaseUpdateIDFail = []struct {
 	},
 }
 
+var testCaseGetListSuccess = []struct {
+	Method       string
+	URL          string
+	expectStatus int
+}{
+	{
+		Method:       "GET",
+		URL:          "/docker/config",
+		expectStatus: 200,
+	},
+}
+
 func (s CreateDockerSuccessImplTest) InsertData(bytevalue []byte) error {
 	return nil
 }
 
 func (s CreateDockerFailImplTest) InsertData(bytevalue []byte) error {
 	return errors.New("The request could not be completed because of a conflict")
-}
-
-func (s GetItemIDSuccessImplTest) GetItem(bytevalue []byte) (models.Root, error) {
-	var rootobject models.Root
-	return rootobject, errors.New("id is found but conflict in JSON body")
 }
 
 func (s GetItemIDFailImplTest) GetItem(bytevalue []byte) (models.Root, error) {
@@ -208,10 +191,6 @@ func (s GetListSuccessImplTest) GetList() ([]string, []string, error) {
 	names := []string{"cacoon-cam", "cacooncam"}
 	ids := []string{"5b2cd0a9a90362508f80f71d", "5b28b442a90362768113e47e"}
 	return names, ids, nil
-}
-
-func (s GetListFailImplTest) GetList() ([]string, []string, error) {
-	return []string{}, []string{}, errors.New("unable list")
 }
 
 func (s UpdateIDFullSuccessImpl) UpdateData(bytevalue []byte) error {
@@ -251,6 +230,12 @@ func TestCreateDockerConfig(t *testing.T) {
 		// directly and pass in our Request and ResponseRecorder.
 		handler.ServeHTTP(rr, req)
 
+		requestBody := string(rr.Body.Bytes())
+
+		if strings.TrimSpace(requestBody) != test.Message {
+			t.Errorf("expected message to be %s but got %s", test.Message, string(rr.Body.Bytes()))
+		}
+
 		// Check the status code is what we expect.
 		if status := rr.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
@@ -268,7 +253,7 @@ func TestCreateDockerConfig(t *testing.T) {
 		router := mux.NewRouter()
 		ts := httptest.NewServer(router)
 		defer ts.Close()
-		//fmt.Println("testCreateDockerFail JSON body", strings.NewReader(test.JSONBody))
+
 		req, err := http.NewRequest(test.Method, test.URL, strings.NewReader(test.JSONBody))
 		if err != nil {
 			t.Fatal(err)
@@ -282,6 +267,12 @@ func TestCreateDockerConfig(t *testing.T) {
 		// directly and pass in our Request and ResponseRecorder.
 		handler.ServeHTTP(rr, req)
 
+		requestBody := string(rr.Body.Bytes())
+
+		if strings.TrimSpace(requestBody) != test.Message {
+			t.Errorf("expected message to be %s but got %s", test.Message, string(rr.Body.Bytes()))
+		}
+
 		// Check the status code is what we expect.
 		if status := rr.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
@@ -291,31 +282,8 @@ func TestCreateDockerConfig(t *testing.T) {
 }
 
 func TestGetItem(t *testing.T) {
+
 	s := GetDockerItemControllerImpl{
-		GetDockerService: GetItemIDSuccessImplTest{},
-	}
-
-	for _, test := range testCaseGetItemIDSuccess {
-		router := mux.NewRouter()
-		router.HandleFunc("/docker/config/{id}", s.GetDockerConfig())
-
-		ts := httptest.NewServer(router)
-		defer ts.Close()
-
-		req, err := http.NewRequest(test.Method, test.URL, nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		rr := httptest.NewRecorder()
-		router.ServeHTTP(rr, req)
-
-		if status := rr.Code; status != test.expectStatus {
-			t.Errorf("handler returned wrong status code: got %v want %v",
-				status, http.StatusBadRequest)
-		}
-	}
-
-	s = GetDockerItemControllerImpl{
 		GetDockerService: GetItemIDFailImplTest{},
 	}
 
@@ -332,6 +300,12 @@ func TestGetItem(t *testing.T) {
 		}
 		rr := httptest.NewRecorder()
 		router.ServeHTTP(rr, req)
+
+		requestBody := string(rr.Body.Bytes())
+
+		if strings.TrimSpace(requestBody) != test.Message {
+			t.Errorf("expected message to be %s but got %s", test.Message, string(rr.Body.Bytes()))
+		}
 
 		IDval, idErr := hex.DecodeString(test.ID)
 		if status := rr.Code; status != test.expectStatus {
@@ -361,9 +335,14 @@ func TestGetItem(t *testing.T) {
 		rr := httptest.NewRecorder()
 		router.ServeHTTP(rr, req)
 
+		IDval, idErr := hex.DecodeString(test.ID)
 		if status := rr.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				status, test.expectStatus)
+		} else {
+			if idErr != nil {
+				fmt.Printf("Invalid ID:%s", hex.EncodeToString(IDval))
+			}
 		}
 	}
 }
@@ -465,33 +444,30 @@ func TestUpdateData(t *testing.T) {
 	}
 
 }
+func TestGetList(t *testing.T) {
 
-// func TestGetList(t *testing.T) {
+	s := GetDockerListImpl{
+		GetDockerListService: GetListSuccessImplTest{},
+	}
+	for _, test := range testCaseGetListSuccess {
+		router := mux.NewRouter()
+		ts := httptest.NewServer(router)
+		defer ts.Close()
+		//fmt.Println("testCreateDockerFail JSON body", strings.NewReader(test.JSONBody)) 		req, err := http.NewRequest(test.Method, test.URL, nil)
+		req, err := http.NewRequest(test.Method, test.URL, nil)
 
-// 	s := GetDockerListImpl{
-// 		GetDockerListService: GetListSuccessImplTest{},
-// 	}
-// 	for _, test := range testCaseSuccessDockerList {
-// 		router := mux.NewRouter()
-// 		ts := httptest.NewServer(router)
-// 		defer ts.Close()
-// 		//fmt.Println("testCreateDockerFail JSON body", strings.NewReader(test.JSONBody)) 		req, err := http.NewRequest(test.Method, test.URL, nil)
-// 		req, err := http.NewRequest(test.Method, test.URL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-// 		if err != nil {
-// 			t.Fatal(err)
-// 			fmt.Println(err)
-// 		}
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(s.GetDockerConfigList())
+		handler.ServeHTTP(rr, req)
 
-// 		rr := httptest.NewRecorder()
-// 		handler := http.HandlerFunc(s.GetDockerConfigList())
-// 		handler.ServeHTTP(rr, req)
-
-// 		// Check the status code is what we expect.
-// 		if status := rr.Code; status != http.StatusOK {
-// 			t.Errorf("handler returned wrong status code: got %v want %v",
-// 				status, http.StatusOK)
-// 		}
-
-// 	}
-// }
+		// Check the status code is what we expect.
+		if status := rr.Code; status != test.expectStatus {
+			t.Errorf("handler returned wrong status code: got %v want %v",
+				status, http.StatusOK)
+		}
+	}
+}
