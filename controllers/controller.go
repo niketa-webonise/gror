@@ -69,7 +69,6 @@ func (s *DockerListFormImpl) DockerListForm() http.HandlerFunc {
 		}
 		tmpl.Execute(w, nil)
 
-		// tmpl.ExecuteTemplate(w, "DockerList.html", nil)
 	}
 }
 
@@ -97,7 +96,6 @@ func (s *GetListDockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
 			fmt.Println(errors.New("unable to execute the template"))
 		}
 		tmpl.Execute(w, p)
-		// tmpl.ExecuteTemplate(w, "DockerList.html", p)
 
 	}
 }
@@ -111,7 +109,6 @@ func (s *DockerListFormImpl) DockerForm() http.HandlerFunc {
 			fmt.Println(errors.New("unable to execute the template"))
 		}
 		tmpl.Execute(w, nil)
-		// tmpl.ExecuteTemplate(w, "DockerForm.html", nil)
 	}
 }
 
@@ -168,7 +165,6 @@ func (s *GetItemDockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 					fmt.Println(errors.New("unable to execute the template"))
 				}
 				tmpl.Execute(w, rootobject)
-				// tmpl.ExecuteTemplate(w, "DockerData.html", rootobject)
 			}
 			w.Header().Set("Content-Type", "application/json")
 		} else {

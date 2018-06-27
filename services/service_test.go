@@ -245,7 +245,6 @@ func TestGetItem(t *testing.T) {
 
 		_, actualErr := r.GetItem(raw)
 		if gror.expectErr.Error() != actualErr.Error() {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
 			panic("test case failed for " + gror.Name)
 		}
 	}
@@ -259,7 +258,6 @@ func TestGetItem(t *testing.T) {
 
 		_, actualErr := r.GetItem(raw)
 		if gror.expectErr.Error() != actualErr.Error() {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
 			panic("test case failed for " + gror.Name)
 		}
 	}
@@ -276,7 +274,6 @@ func TestGetItem(t *testing.T) {
 		}
 		_, actualErr := r.GetItem(raw)
 		if gror.expectErr != actualErr {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
 			panic("test case failed for " + gror.Name)
 		}
 	}
@@ -298,7 +295,6 @@ func TestGetList(t *testing.T) {
 		_, _, actualErr := r.GetList(raw)
 
 		if gror.expectErr != actualErr {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
 			panic("test case failed for " + gror.Name)
 		}
 	}
@@ -311,7 +307,6 @@ func TestGetList(t *testing.T) {
 		}
 		_, _, actualErr := r.GetList(raw)
 		if gror.expectErr.Error() != actualErr.Error() {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
 			panic("test case failed for " + gror.Name)
 		}
 	}
@@ -332,7 +327,6 @@ func TestUpdateData(t *testing.T) {
 		}
 		actualErr := r.UpdateData(raw)
 		if gror.expectErr.Error() != actualErr.Error() {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
 			panic("test case failed for " + gror.Name)
 		}
 	}
@@ -346,7 +340,6 @@ func TestUpdateData(t *testing.T) {
 
 		actualErr := r.UpdateData(raw)
 		if gror.expectErr.Error() != actualErr.Error() {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
 			panic("test case failed for " + gror.Name)
 		}
 	}
@@ -364,7 +357,6 @@ func TestUpdateData(t *testing.T) {
 
 		actualErr := r.UpdateData(raw)
 		if gror.expectErr != actualErr {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
 			panic("test case failed for " + gror.Name)
 		}
 	}

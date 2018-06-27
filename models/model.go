@@ -117,7 +117,6 @@ func (s *DockerDaoImpl) GetDockerList(rootobject Root) ([]string, []string) {
 	for items.Next(&rootobject) {
 		names = append(names, rootobject.SystemInfo.Name)
 		objid = append(objid, rootobject.ID.Hex())
-		// fmt.Println(names)
 
 	}
 	return names, objid
