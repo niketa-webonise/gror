@@ -65,12 +65,12 @@ type GetDockerListImpl struct {
 type GetDockerConfigFormImpl struct {
 }
 
+//Path variable
 var Path = os.Getenv("GO_PATH")
 
 //GetDockerConfigForm method execute the template "dockerconfig.gtpl".
 func (s *GetDockerConfigFormImpl) GetDockerConfigForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Path := os.Getenv("GO_PATH")
 		t, err := template.ParseFiles(Path + "views/dockerconfig.gtpl")
 		if err != nil {
 			fmt.Println(errors.New("unable to execute the template"))
@@ -151,8 +151,6 @@ func (s *GetDockerItemControllerImpl) GetDockerConfig() http.HandlerFunc {
 				http.Error(w, "Record not found of this ID:"+vars["id"], http.StatusNotFound)
 				return
 			}
-
-			Path = os.Getenv("GO_PATH")
 
 			t, err := template.ParseFiles(Path + "views/dockerconfigDetails.gtpl")
 			if err != nil {
