@@ -3,6 +3,7 @@
 - The Project uses mongoDB backend.
 
 ###### It provides these set of APIs -
+	
 	/docker/config/new - (GET request)By opening the URL in browser, the new form will open and user can add the respective fields .
 	/docker/config - (POST request)After the user click on submit button, the data will get inserted in mongodb.
 	/docker/config- (GET request)By opening the URL in browser, the user able to view the list of docker project names.
@@ -11,6 +12,7 @@
 
 
 ## Prerequisites-
+	
 	1. For routing  - get this package "go get github.com/gorilla/mux"
 	2. For using mongodb - get these packages "gopkg.in/mgo.v2/bson" and "gopkg.in/mgo.v2"
 	
@@ -18,8 +20,8 @@
 ## For Installing MongoDB follow this Link - 
 [https://docs.mongodb.com/manual/installation](https://docs.mongodb.com/manual/installation)
 
-##To Run Test cases-
- 	There are two ways. The easy one is to use the -run flag and provide a pattern matching names of the tests you want to run.
+## To Run Test cases-
+There are two ways. The easy one is to use the -run flag and provide a pattern matching names of the tests you want to run.
  Example:
  ```
  $ go test -run NameOfTest
