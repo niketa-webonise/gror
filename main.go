@@ -31,9 +31,32 @@ func main() {
 	sr := &servers.DockerServer{
 		Db:     db,
 		Router: mux.NewRouter(),
-		DockerController: &controllers.DockerControllerImpl{
-			DockerService: &services.DockerServiceImpl{
-				DockerDaoImpl: &models.DockerDaoImpl{
+		CreateDockerController: &controllers.CreateDockerControllerImpl{
+			CreateDockerService: &services.InsertDataDockerServiceImpl{
+				CreateDockerDaoImpl: &models.DockerDaoImpl{
+					DB: db,
+				},
+			},
+		},
+		GetDockerConfigController: &controllers.GetItemDockerControllerImpl{
+			GetItemDockerService: &services.GetItemDockerServiceImpl{
+				GetItemDockerDaoImpl: &models.DockerDaoImpl{
+					DB: db,
+				},
+			},
+		},
+		DockerFormController: &controllers.DockerListFormImpl{},
+		GetDockerConfigListController: &controllers.GetListDockerControllerImpl{
+			GetListDockerService: &services.GetListDockerServiceImpl{
+				GetDockerListDaoImpl: &models.DockerDaoImpl{
+					DB: db,
+				},
+			},
+		},
+		DockerListFormController: &controllers.DockerListFormImpl{},
+		UpdateDockerConfigController: &controllers.UpdateDockerControllerImpl{
+			UpdateDockerService: &services.UpdateDockerServiceImpl{
+				UpdateDockerDaoImpl: &models.DockerDaoImpl{
 					DB: db,
 				},
 			},
@@ -46,7 +69,7 @@ func main() {
 
 	r.CreateRoute()
 	r.Server.Router.Handle("/Static/", http.StripPrefix("/Static/", http.FileServer(http.Dir("Static"))))
-	err = http.ListenAndServe(":9090", r.Server.Router)
+	err = http.ListenAndServe(":9191", r.Server.Router)
 	if err != nil {
 		log.Fatal(err)
 		return

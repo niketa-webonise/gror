@@ -7,48 +7,75 @@ import (
 )
 
 // IDockerService wraps the all method of services
-type IDockerService interface {
+type ICreateDockerService interface {
 	InsertData(bytevalue []byte) error
+}
+type IGetItemDockerService interface {
 	GetItem(bytevalue []byte) (models.Root, error)
-	GetList(bytevalue []byte) ([]string, []string)
+}
+type IGetListDockerService interface {
+	GetList(bytevalue []byte) ([]string, []string, error)
+}
+type IUpdateDockerService interface {
 	UpdateData(bytevalue []byte) error
 }
 
 // DockerServiceImpl implements the model
-type DockerServiceImpl struct {
-	DockerDaoImpl models.DockerDao
+type InsertDataDockerServiceImpl struct {
+	CreateDockerDaoImpl models.CreateDockerDao
+}
+type GetItemDockerServiceImpl struct {
+	GetItemDockerDaoImpl models.GetDockerItemDao
+}
+type GetListDockerServiceImpl struct {
+	GetDockerListDaoImpl models.GetDockerListDao
+}
+type UpdateDockerServiceImpl struct {
+	UpdateDockerDaoImpl models.UpdateDockerItemDao
 }
 
 // InsertData returns the CreateDocker's error
-func (s *DockerServiceImpl) InsertData(bytevalue []byte) error {
+func (s *InsertDataDockerServiceImpl) InsertData(bytevalue []byte) error {
 
 	var rootobject models.Root
-	json.Unmarshal(bytevalue, &rootobject)
-	return s.DockerDaoImpl.CreateDocker(rootobject)
+	err := json.Unmarshal(bytevalue, &rootobject)
+	if err != nil {
+		return err
+	}
+	return s.CreateDockerDaoImpl.CreateDocker(rootobject)
 }
 
 // GetItem returns the rootobject as well as error if any
-func (s *DockerServiceImpl) GetItem(bytevalue []byte) (models.Root, error) {
+func (s *GetItemDockerServiceImpl) GetItem(bytevalue []byte) (models.Root, error) {
 
 	var rootobject models.Root
-	json.Unmarshal(bytevalue, &rootobject)
-	rootobject, err := s.DockerDaoImpl.GetDockerItem(rootobject)
+	errUnmarshal := json.Unmarshal(bytevalue, &rootobject)
+	if errUnmarshal != nil {
+		return rootobject, errUnmarshal
+	}
+	rootobject, err := s.GetItemDockerDaoImpl.GetDockerItem(rootobject)
 	return rootobject, err
 }
 
 // GetList returns the array of names and objectid
-func (s *DockerServiceImpl) GetList(bytevalue []byte) ([]string, []string) {
+func (s *GetListDockerServiceImpl) GetList(bytevalue []byte) ([]string, []string, error) {
 
 	var rootobject models.Root
-	json.Unmarshal(bytevalue, &rootobject)
-	names, objid := s.DockerDaoImpl.GetDockerList(rootobject)
-	return names, objid
+	err := json.Unmarshal(bytevalue, &rootobject)
+	if err != nil {
+		return nil, nil, err
+	}
+	names, objid := s.GetDockerListDaoImpl.GetDockerList(rootobject)
+	return names, objid, nil
 }
 
 // UpdateData returns the UpdateData's error
-func (s *DockerServiceImpl) UpdateData(bytevalue []byte) error {
+func (s *UpdateDockerServiceImpl) UpdateData(bytevalue []byte) error {
 
 	var rootobject models.Root
-	json.Unmarshal(bytevalue, &rootobject)
-	return s.DockerDaoImpl.UpdateDocker(rootobject)
+	err := json.Unmarshal(bytevalue, &rootobject)
+	if err != nil {
+		return err
+	}
+	return s.UpdateDockerDaoImpl.UpdateDocker(rootobject)
 }

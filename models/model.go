@@ -76,10 +76,16 @@ type Root struct {
 }
 
 // DockerDao wraps the all method which are interact with database
-type DockerDao interface {
+type CreateDockerDao interface {
 	CreateDocker(rootobject Root) error
+}
+type GetDockerItemDao interface {
 	GetDockerItem(rootobject Root) (Root, error)
+}
+type UpdateDockerItemDao interface {
 	UpdateDocker(rootobject Root) error
+}
+type GetDockerListDao interface {
 	GetDockerList(rootobject Root) ([]string, []string)
 }
 
