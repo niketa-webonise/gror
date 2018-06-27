@@ -10,6 +10,7 @@ import (
 	"github.com/gror/models"
 	"github.com/gror/routes"
 	"github.com/gror/servers"
+
 	"github.com/gror/services"
 )
 
@@ -20,15 +21,36 @@ func main() {
 	s := &servers.Server{
 		DB:     dbwrapper,
 		Router: mux.NewRouter(),
-		DockerController: &controllers.DockerControllerImpl{
-			DockerService: &services.DockerServiceImpl{
-				DockerDaoImpl: &models.DockerDaoImpl{
+		CreateDockerController: &controllers.CreateDockerControllerImpl{
+			CreateDockerService: &services.InsertDataImpl{
+				InsertDockerDaoImpl: &models.DockerDaoImpl{
+					DB: dbwrapper.DB,
+				},
+			},
+		},
+		UpdateDockerController: &controllers.UpdateDockerControllerImpl{
+			UpdateDockerService: &services.UpdateDataImpl{
+				UpdateDockerDaoImpl: &models.DockerDaoImpl{
+					DB: dbwrapper.DB,
+				},
+			},
+		},
+		GetDockerController: &controllers.GetDockerItemControllerImpl{
+			GetDockerService: &services.GetItemImpl{
+				GetDockerDaoImpl: &models.DockerDaoImpl{
+					DB: dbwrapper.DB,
+				},
+			},
+		},
+		GetDockerFormController: &controllers.GetDockerConfigFormImpl{},
+		GetDockerListController: &controllers.GetDockerListImpl{
+			GetDockerListService: &services.GetListImpl{
+				GetListDockerDaoImpl: &models.DockerDaoImpl{
 					DB: dbwrapper.DB,
 				},
 			},
 		},
 	}
-
 	r := &routes.RouteWrapper{
 		Server: s,
 	}
@@ -38,4 +60,6 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+
+	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("view"))))
 }
