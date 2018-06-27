@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -28,110 +27,110 @@ type GetListSuccessImplTest struct {
 type CreateFailMarshalTest struct {
 }
 
-var testCaseCreateFail = []struct {
-	Url       string
+var testCreateDockerFail = []struct {
+	URL       string
 	Message   string
 	Name      string
 	expectErr error
 }{
 	{
-		Url:       "../sample_gror.json",
+		URL:       "../sample_gror.json",
 		Message:   "successfully unmarshall",
 		Name:      "valid data but fails in saving data to db",
 		expectErr: errors.New("Failed to save in db"),
 	},
 }
 
-var testCaseCreateSuccess = []struct {
-	Url       string
+var testCreateDockerSuccess = []struct {
+	URL       string
 	Message   string
 	Name      string
 	expectErr error
 }{
 	{
-		Url:       "../sample_gror.json",
+		URL:       "../sample_gror.json",
 		Message:   "successfully unmarshall and saved in db",
 		Name:      "valid data and successfully saved in db",
 		expectErr: nil,
 	},
 }
 
-var testCaseGetitemFail = []struct {
-	Url       string
+var testGetitemFail = []struct {
+	URL       string
 	Message   string
 	Name      string
 	expectErr error
 }{
 	{
-		Url:       "../sample_gror.json",
+		URL:       "../sample_gror.json",
 		Message:   "successfully unmarshall",
 		Name:      "valid data but fails to get the item",
 		expectErr: errors.New("Failed to get the item"),
 	},
 }
 
-var testCaseGetitemSuccess = []struct {
-	Url       string
+var testGetitemSuccess = []struct {
+	URL       string
 	Message   string
 	Name      string
 	expectErr error
 }{
 	{
-		Url:       "../sample_gror.json",
+		URL:       "../sample_gror.json",
 		Message:   "successfully unmarshall",
 		Name:      "valid data and get the item",
 		expectErr: nil,
 	},
 }
 
-var testCaseGetListSuccess = []struct {
-	Url       string
+var testGetListSuccess = []struct {
+	URL       string
 	Message   string
 	Name      string
 	expectErr error
 }{
 	{
-		Url:       "../sample_gror.json",
+		URL:       "../sample_gror.json",
 		Message:   "successfully unmarshall",
 		Name:      "valid data and get the whole list",
 		expectErr: nil,
 	},
 }
-var testCaseUpdateFail = []struct {
-	Url       string
+var testUpdateFail = []struct {
+	URL       string
 	Message   string
 	Name      string
 	expectErr error
 }{
 	{
-		Url:       "../sample_gror.json",
+		URL:       "../sample_gror.json",
 		Message:   "successfully unmarshall",
 		Name:      "valid data but fail to update data",
 		expectErr: errors.New("Failed to update data"),
 	},
 }
-var testCaseUpdateSuccess = []struct {
-	Url       string
+var testUpdateSuccess = []struct {
+	URL       string
 	Message   string
 	Name      string
 	expectErr error
 }{
 	{
-		Url:       "../sample_gror.json",
+		URL:       "../sample_gror.json",
 		Message:   "successfully unmarshall",
 		Name:      "valid data and data updated",
 		expectErr: nil,
 	},
 }
 
-var testCaseCreateFailMarshal = []struct {
-	Url       string
+var testCreateFailMarshal = []struct {
+	URL       string
 	Message   string
 	Name      string
 	expectErr error
 }{
 	{
-		Url:       "../sample_gror1.json",
+		URL:       "../sample_gror1.json",
 		Message:   "unsuccessfully unmarshall",
 		Name:      "invalid data",
 		expectErr: errors.New("invalid data"),
@@ -140,8 +139,8 @@ var testCaseCreateFailMarshal = []struct {
 
 func (s CreateSuccessImplTest) CreateDocker(rootobject models.Root) error {
 	return nil
-
 }
+
 func (s CreateFailImplTest) CreateDocker(rootobject models.Root) error {
 	return errors.New("Failed to save in db")
 }
@@ -151,230 +150,205 @@ func (s CreateFailMarshalTest) CreateDocker(rootobject models.Root) error {
 }
 
 func (s GetItemFailImplTest) GetDockerItem(rootobject models.Root) (models.Root, error) {
-
 	return rootobject, errors.New("Failed to get the item")
 }
-func (s GetItemSuccessImplTest) GetDockerItem(rootobject models.Root) (models.Root, error) {
 
+func (s GetItemSuccessImplTest) GetDockerItem(rootobject models.Root) (models.Root, error) {
 	return rootobject, nil
 }
-func (s CreateFailMarshalTest) GetDockerItem(rootobject models.Root) (models.Root, error) {
 
+func (s CreateFailMarshalTest) GetDockerItem(rootobject models.Root) (models.Root, error) {
 	return rootobject, errors.New("invalid data")
 }
-func (s UpdateFailImplTest) UpdateDocker(rootobject models.Root) error {
 
+func (s UpdateFailImplTest) UpdateDocker(rootobject models.Root) error {
 	return errors.New("Failed to update data")
 }
-func (s UpdateSuccessImplTest) UpdateDocker(rootobject models.Root) error {
 
+func (s UpdateSuccessImplTest) UpdateDocker(rootobject models.Root) error {
 	return nil
 }
 
 func (s CreateFailMarshalTest) UpdateDocker(rootobject models.Root) error {
-
 	return errors.New("invalid data")
 }
-func (s GetListSuccessImplTest) GetDockerList() ([]string, []string) {
 
+func (s GetListSuccessImplTest) GetDockerList() ([]string, []string) {
 	return []string{}, []string{}
 }
 
 func TestInsertData(t *testing.T) {
-
-	r := &InsertDataImpl{
+	s := &InsertDataImpl{
 		InsertDockerDaoImpl: CreateFailImplTest{},
 	}
 
-	for _, gror := range testCaseCreateFail {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testCreateDockerFail {
+		jsonFile, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		actualErr := r.InsertData(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		actualErr := s.InsertData(jsonFile)
+		if test.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
-	r = &InsertDataImpl{
+
+	s = &InsertDataImpl{
 		InsertDockerDaoImpl: CreateSuccessImplTest{},
 	}
 
-	for _, gror := range testCaseCreateSuccess {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testCreateDockerSuccess {
+		jsonFile, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		actualErr := r.InsertData(raw)
-
-		if gror.expectErr != actualErr {
-			panic("test case failed for " + gror.Name)
+		actualErr := s.InsertData(jsonFile)
+		if test.expectErr != actualErr {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
 
-	r = &InsertDataImpl{
+	s = &InsertDataImpl{
 		InsertDockerDaoImpl: CreateFailMarshalTest{},
 	}
 
-	for _, gror := range testCaseCreateFailMarshal {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testCreateFailMarshal {
+		jsonFile, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		actualErr := r.InsertData(raw)
-
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		actualErr := s.InsertData(jsonFile)
+		if test.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
 
 }
 
 func TestGetItem(t *testing.T) {
-
-	r := &GetItemImpl{
+	s := &GetItemImpl{
 		GetDockerDaoImpl: GetItemFailImplTest{},
 	}
 
-	for _, gror := range testCaseGetitemFail {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testGetitemFail {
+		raw, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		_, actualErr := r.GetItem(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		_, actualErr := s.GetItem(raw)
+		if test.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
-	r = &GetItemImpl{
+
+	s = &GetItemImpl{
 		GetDockerDaoImpl: GetItemSuccessImplTest{},
 	}
 
-	for _, gror := range testCaseGetListSuccess {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testGetListSuccess {
+		josnFile, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		_, actualErr := r.GetItem(raw)
+		_, actualErr := s.GetItem(josnFile)
 
-		if gror.expectErr != actualErr {
-			//t.Errorf("error= %q, want %q", err1, gror.Message)
-			panic("test case failed for " + gror.Name)
+		if test.expectErr != actualErr {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
 
-	r = &GetItemImpl{
+	s = &GetItemImpl{
 		GetDockerDaoImpl: CreateFailMarshalTest{},
 	}
 
-	for _, gror := range testCaseCreateFailMarshal {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testCreateFailMarshal {
+		jsonFile, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		_, actualErr := r.GetItem(raw)
-
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		_, actualErr := s.GetItem(jsonFile)
+		if test.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
-
 }
 
 func TestUpdateData(t *testing.T) {
 	var rootobject models.Root
-
-	r := &UpdateDataImpl{
+	s := &UpdateDataImpl{
 		UpdateDockerDaoImpl: UpdateFailImplTest{},
 	}
 
-	for _, gror := range testCaseUpdateFail {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testUpdateFail {
+		jsonFile, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
+		json.Unmarshal(jsonFile, &rootobject)
 
-		actualErr := r.UpdateData(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		actualErr := s.UpdateData(jsonFile)
+		if test.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
-	r = &UpdateDataImpl{
+
+	s = &UpdateDataImpl{
 		UpdateDockerDaoImpl: UpdateSuccessImplTest{},
 	}
 
-	for _, gror := range testCaseUpdateSuccess {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testUpdateSuccess {
+		jsonFile, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
-
-		actualErr := r.UpdateData(raw)
-
-		if gror.expectErr != actualErr {
-			panic("test case failed for " + gror.Name)
+		json.Unmarshal(jsonFile, &rootobject)
+		actualErr := s.UpdateData(jsonFile)
+		if test.expectErr != actualErr {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
 
-	r = &UpdateDataImpl{
+	s = &UpdateDataImpl{
 		UpdateDockerDaoImpl: CreateFailMarshalTest{},
 	}
 
-	for _, gror := range testCaseCreateFailMarshal {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testCreateFailMarshal {
+		jsonFile, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
-
-		actualErr := r.UpdateData(raw)
-
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		json.Unmarshal(jsonFile, &rootobject)
+		actualErr := s.UpdateData(jsonFile)
+		if test.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
 }
-
 func TestGetList(t *testing.T) {
 	var rootobject models.Root
-
-	r := &GetListImpl{
+	s := &GetListImpl{
 		GetListDockerDaoImpl: GetListSuccessImplTest{},
 	}
 
-	for _, gror := range testCaseUpdateSuccess {
-
-		raw, err := ioutil.ReadFile(gror.Url)
+	for _, test := range testUpdateSuccess {
+		jsonFile, err := ioutil.ReadFile(test.URL)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
-		json.Unmarshal(raw, &rootobject)
-
-		_, _, actualErr := r.GetList()
-
-		if gror.expectErr != actualErr {
-			panic("test case failed for " + gror.Name)
+		json.Unmarshal(jsonFile, &rootobject)
+		_, _, actualErr := s.GetList()
+		if test.expectErr != actualErr {
+			t.Errorf("got code %q but expected %q", test.expectErr.Error(), actualErr.Error())
 		}
 	}
 }
