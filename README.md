@@ -19,7 +19,7 @@
 [https://docs.mongodb.com/manual/installation](https://docs.mongodb.com/manual/installation)
 
 ##To Run Test cases-
- There are two ways. The easy one is to use the -run flag and provide a pattern matching names of the tests you want to run.
+ 	There are two ways. The easy one is to use the -run flag and provide a pattern matching names of the tests you want to run.
  Example:
  ```
  $ go test -run NameOfTest
