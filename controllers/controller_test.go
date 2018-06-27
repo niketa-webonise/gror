@@ -15,10 +15,8 @@ import (
 
 type CreateDockerFailImplTest struct {
 }
-type CreateDockerSuccessImplTest struct {
-}
 
-type GetItemIDSuccessImplTest struct {
+type CreateDockerSuccessImplTest struct {
 }
 
 type GetItemIDFailImplTest struct {
@@ -205,43 +203,39 @@ func (s UpdateIDFailImpl) UpdateData(bytevalue []byte) error {
 	return errors.New("invalid ID")
 }
 
-//TestCreateDockerConfig  function
 func TestCreateDockerConfig(t *testing.T) {
 
 	s := CreateDockerControllerImpl{
 		CreateDockerService: CreateDockerSuccessImplTest{},
 	}
-	for _, test := range testCaseCreateSuccess {
 
+	for _, test := range testCaseCreateSuccess {
 		router := mux.NewRouter()
 		ts := httptest.NewServer(router)
 		defer ts.Close()
 
 		req, err := http.NewRequest(test.Method, test.URL, strings.NewReader(test.JSONBody))
+
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-		rr := httptest.NewRecorder()
+		resp := httptest.NewRecorder()
 		handler := http.HandlerFunc(s.CreateDockerConfig())
-
 		// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 		// directly and pass in our Request and ResponseRecorder.
-		handler.ServeHTTP(rr, req)
-
-		requestBody := string(rr.Body.Bytes())
+		handler.ServeHTTP(resp, req)
+		requestBody := string(resp.Body.Bytes())
 
 		if strings.TrimSpace(requestBody) != test.Message {
-			t.Errorf("expected message to be %s but got %s", test.Message, string(rr.Body.Bytes()))
+			t.Errorf("expected message to be %s but got %s", test.Message, requestBody)
 		}
 
-		// Check the status code is what we expect.
-		if status := rr.Code; status != test.expectStatus {
+		if status := resp.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				status, test.expectStatus)
 		}
-
 	}
 
 	s = CreateDockerControllerImpl{
@@ -249,7 +243,6 @@ func TestCreateDockerConfig(t *testing.T) {
 	}
 
 	for _, test := range testCaseCreateFail {
-
 		router := mux.NewRouter()
 		ts := httptest.NewServer(router)
 		defer ts.Close()
@@ -259,22 +252,16 @@ func TestCreateDockerConfig(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-		rr := httptest.NewRecorder()
+		resp := httptest.NewRecorder()
 		handler := http.HandlerFunc(s.CreateDockerConfig())
+		handler.ServeHTTP(resp, req)
 
-		// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
-		// directly and pass in our Request and ResponseRecorder.
-		handler.ServeHTTP(rr, req)
-
-		requestBody := string(rr.Body.Bytes())
-
+		requestBody := string(resp.Body.Bytes())
 		if strings.TrimSpace(requestBody) != test.Message {
-			t.Errorf("expected message to be %s but got %s", test.Message, string(rr.Body.Bytes()))
+			t.Errorf("expected message to be %s but got %s", test.Message, requestBody)
 		}
 
-		// Check the status code is what we expect.
-		if status := rr.Code; status != test.expectStatus {
+		if status := resp.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				status, test.expectStatus)
 		}
@@ -298,17 +285,17 @@ func TestGetItem(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		rr := httptest.NewRecorder()
-		router.ServeHTTP(rr, req)
+		resp := httptest.NewRecorder()
+		router.ServeHTTP(resp, req)
 
-		requestBody := string(rr.Body.Bytes())
+		requestBody := string(resp.Body.Bytes())
 
 		if strings.TrimSpace(requestBody) != test.Message {
-			t.Errorf("expected message to be %s but got %s", test.Message, string(rr.Body.Bytes()))
+			t.Errorf("expected message to be %s but got %s", test.Message, requestBody)
 		}
 
 		IDval, idErr := hex.DecodeString(test.ID)
-		if status := rr.Code; status != test.expectStatus {
+		if status := resp.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				status, http.StatusBadRequest)
 		} else {
@@ -317,6 +304,7 @@ func TestGetItem(t *testing.T) {
 			}
 		}
 	}
+
 	s = GetDockerItemControllerImpl{
 		GetDockerService: GetItemReqSuccessImplTest{},
 	}
@@ -332,11 +320,12 @@ func TestGetItem(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		rr := httptest.NewRecorder()
-		router.ServeHTTP(rr, req)
+
+		resp := httptest.NewRecorder()
+		router.ServeHTTP(resp, req)
 
 		IDval, idErr := hex.DecodeString(test.ID)
-		if status := rr.Code; status != test.expectStatus {
+		if status := resp.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				status, test.expectStatus)
 		} else {
@@ -366,16 +355,16 @@ func TestUpdateData(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		rr := httptest.NewRecorder()
-		router.ServeHTTP(rr, req)
+		resp := httptest.NewRecorder()
+		router.ServeHTTP(resp, req)
 
-		requestBody := string(rr.Body.Bytes())
+		requestBody := string(resp.Body.Bytes())
 
 		if strings.TrimSpace(requestBody) != test.Message {
-			t.Errorf("expected message to be %s but got %s", test.Message, string(rr.Body.Bytes()))
+			t.Errorf("expected message to be %s but got %s", test.Message, requestBody)
 		}
 
-		if status := rr.Code; status != test.expectStatus {
+		if status := resp.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				status, test.expectStatus)
 		}
@@ -397,16 +386,16 @@ func TestUpdateData(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		rr := httptest.NewRecorder()
-		router.ServeHTTP(rr, req)
+		resp := httptest.NewRecorder()
+		router.ServeHTTP(resp, req)
 
-		requestBody := string(rr.Body.Bytes())
+		requestBody := string(resp.Body.Bytes())
 
 		if strings.TrimSpace(requestBody) != test.Message {
-			t.Errorf("expected message to be %s but got %s", test.Message, string(rr.Body.Bytes()))
+			t.Errorf("expected message to be %s but got %s", test.Message, requestBody)
 		}
 
-		if status := rr.Code; status != test.expectStatus {
+		if status := resp.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				status, test.expectStatus)
 		}
@@ -428,16 +417,16 @@ func TestUpdateData(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		rr := httptest.NewRecorder()
-		router.ServeHTTP(rr, req)
+		resp := httptest.NewRecorder()
+		router.ServeHTTP(resp, req)
 
-		requestBody := string(rr.Body.Bytes())
+		requestBody := string(resp.Body.Bytes())
 
 		if strings.TrimSpace(requestBody) != test.Message {
-			t.Errorf("expected message to be %s but got %s", test.Message, string(rr.Body.Bytes()))
+			t.Errorf("expected message to be %s but got %s", test.Message, requestBody)
 		}
 
-		if status := rr.Code; status != test.expectStatus {
+		if status := resp.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				status, test.expectStatus)
 		}
@@ -449,25 +438,24 @@ func TestGetList(t *testing.T) {
 	s := GetDockerListImpl{
 		GetDockerListService: GetListSuccessImplTest{},
 	}
+
 	for _, test := range testCaseGetListSuccess {
 		router := mux.NewRouter()
 		ts := httptest.NewServer(router)
 		defer ts.Close()
-		//fmt.Println("testCreateDockerFail JSON body", strings.NewReader(test.JSONBody)) 		req, err := http.NewRequest(test.Method, test.URL, nil)
 		req, err := http.NewRequest(test.Method, test.URL, nil)
 
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		rr := httptest.NewRecorder()
+		resp := httptest.NewRecorder()
 		handler := http.HandlerFunc(s.GetDockerConfigList())
-		handler.ServeHTTP(rr, req)
+		handler.ServeHTTP(resp, req)
 
-		// Check the status code is what we expect.
-		if status := rr.Code; status != test.expectStatus {
+		if status := resp.Code; status != test.expectStatus {
 			t.Errorf("handler returned wrong status code: got %v want %v",
-				status, http.StatusOK)
+				status, test.expectStatus)
 		}
 	}
 }
