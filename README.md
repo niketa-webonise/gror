@@ -91,10 +91,92 @@ func (s *RouteWrapper) CreateRoute() {
 ```
 #### Different API request
 
-> Insert data(POST): localhost:9090
+> Insert data(POST): localhost:9191
 
-> Get all list of projects: localhost:9090/docker/config/list
+> Get all list of projects: localhost:9191/docker/config/list
 
-> Get single project details: localhost:9090/docker/config/{id}
+> Get single project details: localhost:9191/docker/config/{id}
 
-> Update single project details: localhost:9090/docker/config/{id}
+> Update single project details: localhost:9191/docker/config/{id}
+
+
+##Testing a services with gorilla/mux
+
+Define test cases related to services like this
+
+ ```golang
+ var testCaseCreateSuccess = []struct {
+	Url              string
+	Message          string
+	Name             string
+	expectErr        error
+	serviceInterface CreateSuccessImplTest
+}{
+	{
+		Url:              "../sample_gror.json",
+		Message:          "successfully unmarshall and saved in db",
+		Name:             "valid data and successfully saved in db",
+		expectErr:        nil,
+		serviceInterface: CreateSuccessImplTest{},
+	},
+}
+```
+
+Then mock the model to run the services like below:
+
+```golang
+func (s CreateSuccessImplTest) CreateDocker(rootobject models.Root) error {
+	return nil
+
+}
+```
+
+Now define service function by injecting dao implementation  
+
+```golang
+func TestInsertData(t *testing.T) {
+
+	
+	r = &InsertDataDockerServiceImpl{
+		CreateDockerDaoImpl: CreateSuccessImplTest{},
+	}
+
+	for _, gror := range testCaseCreateSuccess {
+
+		raw, err := ioutil.ReadFile(gror.Url)
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		actualErr := r.InsertData(raw)
+		if gror.expectErr != actualErr {
+			panic("test case failed for " + gror.Name)
+		}
+
+	}
+}
+```
+##Running the tests
+
+To run the tests from services directory simply execute:
+
+```
+go test -v
+
+```
+And the output will be something like this:
+
+```
+=== RUN   TestInsertData
+--- PASS: TestInsertData (0.00s)
+=== RUN   TestGetItem
+--- PASS: TestGetItem (0.00s)
+=== RUN   TestGetList
+--- PASS: TestGetList (0.00s)
+=== RUN   TestUpdateData
+--- PASS: TestUpdateData (0.00s)
+PASS
+ok      github.com/gror/services        0.004s
+
+```
