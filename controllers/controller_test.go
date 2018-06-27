@@ -85,14 +85,12 @@ var TestCreateFailDb = []struct {
 }
 var TestGetItemSuccess = []struct {
 	Title               string
-	Request             string
 	Response            string
 	StatusCode          int
 	URLPath             string
 	controllerInterface MockServices
 }{{
 	Title:               "4.System should return the data of particular id",
-	Request:             "5b1e8b36a9036256ef12b6e7",
 	Response:            "nil",
 	StatusCode:          200,
 	URLPath:             "/docker/config/5b1e8b36a9036256ef12b6e7",
@@ -101,14 +99,12 @@ var TestGetItemSuccess = []struct {
 }
 var TestGetItemFail = []struct {
 	Title               string
-	Request             string
 	Response            string
 	StatusCode          int
 	URLPath             string
 	controllerInterface MockServices
 }{{
 	Title:               "5.System should return Invalid Id bad request error",
-	Request:             "11212",
 	Response:            "Invalid Id bad request",
 	StatusCode:          400,
 	URLPath:             "/docker/config/11212",
@@ -117,14 +113,12 @@ var TestGetItemFail = []struct {
 }
 var TestGetItemFailToGetRecord = []struct {
 	Title               string
-	Request             string
 	Response            string
 	StatusCode          int
 	URLPath             string
 	controllerInterface MockServices
 }{{
 	Title:               "6.System should return Record not found of this ID error",
-	Request:             "5b1e8b36a9036256ef12b6e7",
 	Response:            "Record not found of this ID:5b1e8b36a9036256ef12b6e7",
 	StatusCode:          404,
 	URLPath:             "/docker/config/5b1e8b36a9036256ef12b6e7",
@@ -133,14 +127,12 @@ var TestGetItemFailToGetRecord = []struct {
 }
 var TestGetListSuccess = []struct {
 	Title               string
-	Request             string
 	Response            string
 	StatusCode          int
 	URLPath             string
 	controllerInterface MockServices
 }{{
 	Title:               "7.System should return the all list of project",
-	Request:             "",
 	Response:            "nil",
 	StatusCode:          200,
 	URLPath:             "/docker/config/list",
@@ -494,10 +486,8 @@ func TestGetDockerConfigList(t *testing.T) {
 		t.Log("\n")
 		t.Log("Executing test", testCase.Title)
 
-		reader := strings.NewReader(testCase.Request)
-
 		//Create new request
-		request, err := http.NewRequest("GET", testCase.URLPath, reader)
+		request, err := http.NewRequest("GET", testCase.URLPath, nil)
 		if err != nil {
 			fmt.Println(errors.New("Failed to create new request"))
 		}
