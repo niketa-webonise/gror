@@ -59,10 +59,11 @@ type UpdateDockerControllerImpl struct {
 type DockerListFormImpl struct {
 }
 
+var home = os.Getenv("HOME")
+
 // DockerListForm  display DockerList page
 func (s *DockerListFormImpl) DockerListForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		home := os.Getenv("HOME")
 		tmpl, err := template.ParseFiles(home + "/view/DockerList.html")
 		if err != nil {
 			fmt.Println(errors.New("unable to execute the template"))
@@ -89,7 +90,6 @@ func (s *GetListDockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
 		p := ProjectNames{}
 		p.Names = names
 		p.ObjId = objid
-		home := os.Getenv("HOME")
 		tmpl, err := template.ParseFiles(home + "/view/DockerList.html")
 		if err != nil {
 			fmt.Println(err)
@@ -103,7 +103,6 @@ func (s *GetListDockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
 // DockerForm  display DockerForm page
 func (s *DockerListFormImpl) DockerForm() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		home := os.Getenv("HOME")
 		tmpl, err := template.ParseFiles(home + "/view/DockerForm.html")
 		if err != nil {
 			fmt.Println(errors.New("unable to execute the template"))
@@ -159,7 +158,6 @@ func (s *GetItemDockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 				http.Error(w, "Record not found of this ID:"+vars["id"], http.StatusNotFound)
 				return
 			} else {
-				home := os.Getenv("HOME")
 				tmpl, err := template.ParseFiles(home + "/view/DockerData.html")
 				if err != nil {
 					fmt.Println(errors.New("unable to execute the template"))
