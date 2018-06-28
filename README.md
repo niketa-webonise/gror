@@ -89,6 +89,11 @@ func (s *RouteWrapper) CreateRoute() {
 
 }
 ```
+Before running the api request you must have to export the HOME variable with your working directory path like below:
+
+```
+export HOME=/home/webonise/chirag/go/src/github.com/gror
+```
 #### Different API request
 
 > Insert data(POST): localhost:9191
@@ -158,6 +163,12 @@ func TestInsertData(t *testing.T) {
 }
 ```
 ## Running the tests
+
+Before running the tests you must have to export the HOME variable with your working directory path like below:
+
+```
+export HOME=/home/webonise/chirag/go/src/github.com/gror
+```
 
 To run the tests from services directory simply execute:
 

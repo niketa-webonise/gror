@@ -59,6 +59,7 @@ type UpdateDockerControllerImpl struct {
 type DockerListFormImpl struct {
 }
 
+//Absolute path
 var home = os.Getenv("HOME")
 
 // DockerListForm  display DockerList page
