@@ -18,7 +18,7 @@
 ## For Installing MongoDB follow this Link - 
 [https://docs.mongodb.com/manual/installation](https://docs.mongodb.com/manual/installation)
 
-##To Run Test cases-
+## To Run Test cases-
 
  Before running the tests you have to set current working directory path like below:
  ```
