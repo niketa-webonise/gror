@@ -17,7 +17,11 @@ import (
 func main() {
 
 	dbwrapper := &database.DBWrapper{}
-	dbwrapper.Init()
+	dbError := dbwrapper.Init()
+	if dbError != nil {
+		log.Fatal(dbError)
+		return
+	}
 	s := &servers.Server{
 		DB:     dbwrapper,
 		Router: mux.NewRouter(),
