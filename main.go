@@ -67,7 +67,6 @@ func main() {
 	}
 
 	r.CreateRoute()
-	r.Server.Router.Handle("/Static/", http.StripPrefix("/Static/", http.FileServer(http.Dir("Static"))))
 	err = http.ListenAndServe(":9191", r.Server.Router)
 	if err != nil {
 		log.Fatal(err)
