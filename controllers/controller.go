@@ -124,7 +124,6 @@ func (s *CreateDockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 			http.Error(w, "The request could not be completed because of a conflict", http.StatusConflict)
 			return
 		} else {
-			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprintln(w, "{\"message\":\"Successfully created!\"}")
 		}
 
