@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -183,47 +182,47 @@ func TestInsertData(t *testing.T) {
 		CreateDockerDaoImpl: CreateFailImplTest{},
 	}
 
-	for _, gror := range testCaseCreateFail {
+	for _, testCase := range testCaseCreateFail {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 
 		actualErr := r.InsertData(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
-	for _, gror := range testCaseUnmarshallingFail {
+	for _, testCase := range testCaseUnmarshallingFail {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 
 		actualErr := r.InsertData(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
 	r = &InsertDataDockerServiceImpl{
 		CreateDockerDaoImpl: CreateSuccessImplTest{},
 	}
 
-	for _, gror := range testCaseCreateSuccess {
+	for _, testCase := range testCaseCreateSuccess {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 
 		actualErr := r.InsertData(raw)
-		if gror.expectErr != actualErr {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr != actualErr {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 
 	}
@@ -235,46 +234,46 @@ func TestGetItem(t *testing.T) {
 		GetItemDockerDaoImpl: GetItemFailImplTest{},
 	}
 
-	for _, gror := range testCaseGetitemFail {
+	for _, testCase := range testCaseGetitemFail {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 
 		_, actualErr := r.GetItem(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
-	for _, gror := range testCaseUnmarshallingFail {
+	for _, testCase := range testCaseUnmarshallingFail {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 
 		_, actualErr := r.GetItem(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
 	r = &GetItemDockerServiceImpl{
 		GetItemDockerDaoImpl: GetItemSuccessImplTest{},
 	}
 
-	for _, gror := range testCaseGetitemSuccess {
+	for _, testCase := range testCaseGetitemSuccess {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 		_, actualErr := r.GetItem(raw)
-		if gror.expectErr != actualErr {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr != actualErr {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
 }
@@ -285,29 +284,29 @@ func TestGetList(t *testing.T) {
 		GetDockerListDaoImpl: GetListSuccessImplTest{},
 	}
 
-	for _, gror := range testCaseGetListSuccess {
+	for _, testCase := range testCaseGetListSuccess {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 		_, _, actualErr := r.GetList(raw)
 
-		if gror.expectErr != actualErr {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr != actualErr {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
-	for _, gror := range testCaseUnmarshallingFail {
+	for _, testCase := range testCaseUnmarshallingFail {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 		_, _, actualErr := r.GetList(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
 }
@@ -318,46 +317,46 @@ func TestUpdateData(t *testing.T) {
 		UpdateDockerDaoImpl: UpdateFailImplTest{},
 	}
 
-	for _, gror := range testCaseUpdateFail {
+	for _, testCase := range testCaseUpdateFail {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 		actualErr := r.UpdateData(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
-	for _, gror := range testCaseUnmarshallingFail {
+	for _, testCase := range testCaseUnmarshallingFail {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 
 		actualErr := r.UpdateData(raw)
-		if gror.expectErr.Error() != actualErr.Error() {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr.Error() != actualErr.Error() {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
 	r = &UpdateDockerServiceImpl{
 		UpdateDockerDaoImpl: UpdateSuccessImplTest{},
 	}
 
-	for _, gror := range testCaseUpdateSuccess {
+	for _, testCase := range testCaseUpdateSuccess {
 
-		raw, err := ioutil.ReadFile(gror.Url)
+		raw, err := ioutil.ReadFile(testCase.Url)
 		if err != nil {
-			fmt.Println(err.Error())
+			t.Fatal(err)
 			os.Exit(1)
 		}
 
 		actualErr := r.UpdateData(raw)
-		if gror.expectErr != actualErr {
-			panic("test case failed for " + gror.Name)
+		if testCase.expectErr != actualErr {
+			t.Errorf("got code %q but expected %q", testCase.expectErr.Error(), actualErr.Error())
 		}
 	}
 }

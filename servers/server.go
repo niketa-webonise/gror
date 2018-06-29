@@ -14,6 +14,5 @@ type DockerServer struct {
 	GetDockerConfigController     controllers.GetDockerConfigInterface
 	DockerFormController          controllers.DockerFormInterface
 	GetDockerConfigListController controllers.GetDockerConfigListInterface
-	DockerListFormController      controllers.DockerListFormInterface
 	UpdateDockerConfigController  controllers.UpdateDockerConfigInterface
 }

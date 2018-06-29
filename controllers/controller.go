@@ -14,9 +14,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-// tmpl is used to store the all parsed html pages
-// var tmpl = template.Must(template.ParseGlob("view/*.html"))
-
 // ProjectNames contains fields that is to be used to return a response from GetDockerCongifList
 type ProjectNames struct {
 	Names []string
@@ -39,9 +36,6 @@ type DockerFormInterface interface {
 type GetDockerConfigListInterface interface {
 	GetDockerConfigList() http.HandlerFunc
 }
-type DockerListFormInterface interface {
-	DockerListForm() http.HandlerFunc
-}
 
 // DockerControllerImpl  implements the all services
 type CreateDockerControllerImpl struct {
@@ -62,18 +56,6 @@ type DockerListFormImpl struct {
 //Absolute path
 var home = os.Getenv("HOME")
 
-// DockerListForm  display DockerList page
-func (s *DockerListFormImpl) DockerListForm() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		tmpl, err := template.ParseFiles(home + "/view/DockerList.html")
-		if err != nil {
-			fmt.Println(errors.New("unable to execute the template"))
-		}
-		tmpl.Execute(w, nil)
-
-	}
-}
-
 // GetDockerConfigList display the DockerList page data from database and returns ProjectNames object as a response
 func (s *GetListDockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -93,8 +75,8 @@ func (s *GetListDockerControllerImpl) GetDockerConfigList() http.HandlerFunc {
 		p.ObjId = objid
 		tmpl, err := template.ParseFiles(home + "/view/DockerList.html")
 		if err != nil {
-			fmt.Println(err)
-			fmt.Println(errors.New("unable to execute the template"))
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
 		}
 		tmpl.Execute(w, p)
 
@@ -134,8 +116,6 @@ func (s *CreateDockerControllerImpl) CreateDockerConfig() http.HandlerFunc {
 		if err != nil {
 			http.Error(w, "The request could not be completed because of a conflict", http.StatusConflict)
 			return
-		} else {
-			w.Header().Set("Content-Type", "application/json")
 		}
 	}
 }
@@ -161,11 +141,11 @@ func (s *GetItemDockerControllerImpl) GetDockerConfig() http.HandlerFunc {
 			} else {
 				tmpl, err := template.ParseFiles(home + "/view/DockerData.html")
 				if err != nil {
-					fmt.Println(errors.New("unable to execute the template"))
+					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					return
 				}
 				tmpl.Execute(w, rootobject)
 			}
-			w.Header().Set("Content-Type", "application/json")
 		} else {
 			http.Error(w, "Invalid Id bad request", http.StatusBadRequest)
 		}
@@ -196,7 +176,6 @@ func (s *UpdateDockerControllerImpl) UpdateDockerConfig() http.HandlerFunc {
 				http.Error(w, "Record not found of this ID:"+params["id"]+" Failed to update", http.StatusNotFound)
 				return
 			}
-			w.Header().Set("Content-Type", "application/json")
 		} else {
 
 			http.Error(w, "Invalid Id bad request", http.StatusBadRequest)

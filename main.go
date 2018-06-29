@@ -16,13 +16,13 @@ import (
 func main() {
 
 	// dbconfig intialize the mongoDB dial and database name
-	dbconfig := &database.DbConfig{
+	dbConfig := &database.DbConfig{
 		Dial:   "mongodb://127.0.0.1:27017/",
 		DbName: "dockerDB",
 	}
 
 	// db intialize the database
-	db, err := dbconfig.Init()
+	db, err := dbConfig.Init()
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -53,7 +53,6 @@ func main() {
 				},
 			},
 		},
-		DockerListFormController: &controllers.DockerListFormImpl{},
 		UpdateDockerConfigController: &controllers.UpdateDockerControllerImpl{
 			UpdateDockerService: &services.UpdateDockerServiceImpl{
 				UpdateDockerDaoImpl: &models.DockerDaoImpl{
