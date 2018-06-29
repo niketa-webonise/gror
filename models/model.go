@@ -68,7 +68,7 @@ type SystemInfo struct {
 
 //Root is outermost container that contains SystemInfo
 type Root struct {
-	ID         bson.ObjectId `json:"id" bson:"_id",omitempty`
+	ID         bson.ObjectId `json:"id" bson:"_id"`
 	SystemInfo SystemInfo    `json:"systemInfo" bson:"systemInfo"` //SystemInfo field is of type SystemInfo
 	AuthDatas  []AuthData    `json:"authData" bson:"authData"`     //AuthDatas field is of type AuthData array
 	Hosts      []Host        `json:"hosts" bson:"hosts"`           //Hosts field is of type Host array

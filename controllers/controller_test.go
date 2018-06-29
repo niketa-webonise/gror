@@ -34,10 +34,13 @@ type GetListFailImplTest struct {
 type UpdateIDFullSuccessImpl struct {
 }
 
-type UpdateIDSuccessImpl struct {
+type UpdateFailInvalidDataImpl struct {
 }
 
 type UpdateIDFailImpl struct {
+}
+
+type UpdateInvalidIDImpl struct {
 }
 
 var testCaseCreateFail = []struct {
@@ -119,7 +122,7 @@ var testCaseUpdateIDFullSuccess = []struct {
 	},
 }
 
-var testCaseUpdateIDSuccess = []struct {
+var testCaseUpdateInvalidData = []struct {
 	ID           string
 	Method       string
 	Message      string
@@ -155,6 +158,24 @@ var testCaseUpdateIDFail = []struct {
 	},
 }
 
+var testCaseUpdateInvalidID = []struct {
+	ID           string
+	Message      string
+	Method       string
+	URL          string
+	JSONBody     string
+	expectStatus int
+}{
+	{
+		ID:           "5b28b442a90362768113e47e",
+		Message:      "Record not found of this ID:5b28b442a90362768113e47e Failed to update",
+		Method:       "PUT",
+		URL:          "/docker/config/5b28b442a90362768113e47e",
+		JSONBody:     "{\"systemInfo\": {\"grorVersion\": \"1.1.0\",\"name\": \"cocooncam\" } }",
+		expectStatus: 404,
+	},
+}
+
 var testCaseGetListSuccess = []struct {
 	Method       string
 	URL          string
@@ -186,16 +207,14 @@ func (s GetItemReqSuccessImplTest) GetItem(bytevalue []byte) (models.Root, error
 }
 
 func (s GetListSuccessImplTest) GetList() ([]string, []string, error) {
-	names := []string{"cacoon-cam", "cacooncam"}
-	ids := []string{"5b2cd0a9a90362508f80f71d", "5b28b442a90362768113e47e"}
-	return names, ids, nil
+	return []string{}, []string{}, nil
 }
 
 func (s UpdateIDFullSuccessImpl) UpdateData(bytevalue []byte) error {
 	return nil
 }
 
-func (s UpdateIDSuccessImpl) UpdateData(bytevalue []byte) error {
+func (s UpdateFailInvalidDataImpl) UpdateData(bytevalue []byte) error {
 	return errors.New("valid ID ,invalid JSONBody")
 }
 
@@ -203,16 +222,18 @@ func (s UpdateIDFailImpl) UpdateData(bytevalue []byte) error {
 	return errors.New("invalid ID")
 }
 
+func (s UpdateInvalidIDImpl) UpdateData(bytevalue []byte) error {
+	return errors.New("Record not found of this ID")
+}
+
 func TestCreateDockerConfig(t *testing.T) {
-
-	s := CreateDockerControllerImpl{
-		CreateDockerService: CreateDockerSuccessImplTest{},
-	}
-
 	for _, test := range testCaseCreateSuccess {
+		c := CreateDockerControllerImpl{
+			CreateDockerService: CreateDockerSuccessImplTest{},
+		}
 		router := mux.NewRouter()
-		ts := httptest.NewServer(router)
-		defer ts.Close()
+		server := httptest.NewServer(router)
+		defer server.Close()
 
 		req, err := http.NewRequest(test.Method, test.URL, strings.NewReader(test.JSONBody))
 
@@ -222,7 +243,7 @@ func TestCreateDockerConfig(t *testing.T) {
 
 		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 		resp := httptest.NewRecorder()
-		handler := http.HandlerFunc(s.CreateDockerConfig())
+		handler := http.HandlerFunc(c.CreateDockerConfig())
 		// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 		// directly and pass in our Request and ResponseRecorder.
 		handler.ServeHTTP(resp, req)
@@ -238,14 +259,15 @@ func TestCreateDockerConfig(t *testing.T) {
 		}
 	}
 
-	s = CreateDockerControllerImpl{
-		CreateDockerService: CreateDockerFailImplTest{},
-	}
-
 	for _, test := range testCaseCreateFail {
+
+		c := CreateDockerControllerImpl{
+			CreateDockerService: CreateDockerFailImplTest{},
+		}
+
 		router := mux.NewRouter()
-		ts := httptest.NewServer(router)
-		defer ts.Close()
+		server := httptest.NewServer(router)
+		defer server.Close()
 
 		req, err := http.NewRequest(test.Method, test.URL, strings.NewReader(test.JSONBody))
 		if err != nil {
@@ -253,7 +275,7 @@ func TestCreateDockerConfig(t *testing.T) {
 		}
 
 		resp := httptest.NewRecorder()
-		handler := http.HandlerFunc(s.CreateDockerConfig())
+		handler := http.HandlerFunc(c.CreateDockerConfig())
 		handler.ServeHTTP(resp, req)
 
 		requestBody := string(resp.Body.Bytes())
@@ -270,16 +292,16 @@ func TestCreateDockerConfig(t *testing.T) {
 
 func TestGetItem(t *testing.T) {
 
-	s := GetDockerItemControllerImpl{
-		GetDockerService: GetItemIDFailImplTest{},
-	}
-
 	for _, test := range testCaseGetItemIDFail {
 
+		c := GetDockerItemControllerImpl{
+			GetDockerService: GetItemIDFailImplTest{},
+		}
+
 		router := mux.NewRouter()
-		router.HandleFunc("/docker/config/{id}", s.GetDockerConfig())
-		ts := httptest.NewServer(router)
-		defer ts.Close()
+		router.HandleFunc("/docker/config/{id}", c.GetDockerConfig())
+		server := httptest.NewServer(router)
+		defer server.Close()
 
 		req, err := http.NewRequest(test.Method, test.URL, nil)
 		if err != nil {
@@ -305,16 +327,16 @@ func TestGetItem(t *testing.T) {
 		}
 	}
 
-	s = GetDockerItemControllerImpl{
-		GetDockerService: GetItemReqSuccessImplTest{},
-	}
-
 	for _, test := range testCaseGetItemFullSuccess {
-		router := mux.NewRouter()
-		router.HandleFunc("/docker/config/{id}", s.GetDockerConfig())
+		c := GetDockerItemControllerImpl{
+			GetDockerService: GetItemReqSuccessImplTest{},
+		}
 
-		ts := httptest.NewServer(router)
-		defer ts.Close()
+		router := mux.NewRouter()
+		router.HandleFunc("/docker/config/{id}", c.GetDockerConfig())
+
+		server := httptest.NewServer(router)
+		defer server.Close()
 
 		req, err := http.NewRequest(test.Method, test.URL, nil)
 		if err != nil {
@@ -338,17 +360,17 @@ func TestGetItem(t *testing.T) {
 
 func TestUpdateData(t *testing.T) {
 
-	s := UpdateDockerControllerImpl{
+	c := UpdateDockerControllerImpl{
 		UpdateDockerService: UpdateIDFullSuccessImpl{},
 	}
 
 	for _, test := range testCaseUpdateIDFullSuccess {
 
 		router := mux.NewRouter()
-		router.HandleFunc("/docker/config/{id}", s.UpdateDockerConfig())
+		router.HandleFunc("/docker/config/{id}", c.UpdateDockerConfig())
 
-		ts := httptest.NewServer(router)
-		defer ts.Close()
+		server := httptest.NewServer(router)
+		defer server.Close()
 
 		req, err := http.NewRequest(test.Method, test.URL, strings.NewReader(test.JSONBody))
 		if err != nil {
@@ -370,17 +392,16 @@ func TestUpdateData(t *testing.T) {
 		}
 	}
 
-	s = UpdateDockerControllerImpl{
-		UpdateDockerService: UpdateIDSuccessImpl{},
-	}
-
-	for _, test := range testCaseUpdateIDSuccess {
+	for _, test := range testCaseUpdateInvalidData {
+		c := UpdateDockerControllerImpl{
+			UpdateDockerService: UpdateInvalidIDImpl{},
+		}
 
 		router := mux.NewRouter()
-		router.HandleFunc("/docker/config/{id}", s.UpdateDockerConfig())
+		router.HandleFunc("/docker/config/{id}", c.UpdateDockerConfig())
 
-		ts := httptest.NewServer(router)
-		defer ts.Close()
+		server := httptest.NewServer(router)
+		defer server.Close()
 
 		req, err := http.NewRequest(test.Method, test.URL, strings.NewReader(test.JSONBody))
 		if err != nil {
@@ -399,24 +420,58 @@ func TestUpdateData(t *testing.T) {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				status, test.expectStatus)
 		}
-	}
-
-	s = UpdateDockerControllerImpl{
-		UpdateDockerService: UpdateIDFailImpl{},
 	}
 
 	for _, test := range testCaseUpdateIDFail {
 
-		router := mux.NewRouter()
-		router.HandleFunc("/docker/config/{id}", s.UpdateDockerConfig())
+		c := UpdateDockerControllerImpl{
+			UpdateDockerService: UpdateIDFailImpl{},
+		}
 
-		ts := httptest.NewServer(router)
-		defer ts.Close()
+		router := mux.NewRouter()
+		router.HandleFunc("/docker/config/{id}", c.UpdateDockerConfig())
+
+		server := httptest.NewServer(router)
+		defer server.Close()
 
 		req, err := http.NewRequest(test.Method, test.URL, strings.NewReader(test.JSONBody))
 		if err != nil {
 			t.Fatal(err)
 		}
+		resp := httptest.NewRecorder()
+		router.ServeHTTP(resp, req)
+
+		requestBody := string(resp.Body.Bytes())
+
+		if strings.TrimSpace(requestBody) != test.Message {
+			t.Errorf("expected message to be %s but got %s", test.Message, requestBody)
+		}
+
+		if status := resp.Code; status != test.expectStatus {
+			t.Errorf("handler returned wrong status code: got %v want %v",
+				status, test.expectStatus)
+		}
+	}
+
+	for _, test := range testCaseUpdateInvalidID {
+
+		c := UpdateDockerControllerImpl{
+			UpdateDockerService: UpdateInvalidIDImpl{},
+		}
+
+		router := mux.NewRouter()
+		router.HandleFunc("/docker/config/{id}", c.UpdateDockerConfig())
+
+		server := httptest.NewServer(router)
+		defer server.Close()
+
+		reader := strings.NewReader(test.JSONBody)
+
+		req, err := http.NewRequest(test.Method, test.URL, reader)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		resp := httptest.NewRecorder()
 		router.ServeHTTP(resp, req)
 
@@ -434,23 +489,20 @@ func TestUpdateData(t *testing.T) {
 
 }
 func TestGetList(t *testing.T) {
-
-	s := GetDockerListImpl{
-		GetDockerListService: GetListSuccessImplTest{},
-	}
-
 	for _, test := range testCaseGetListSuccess {
+		c := GetDockerListImpl{
+			GetDockerListService: GetListSuccessImplTest{},
+		}
 		router := mux.NewRouter()
-		ts := httptest.NewServer(router)
-		defer ts.Close()
+		server := httptest.NewServer(router)
+		defer server.Close()
 		req, err := http.NewRequest(test.Method, test.URL, nil)
-
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		resp := httptest.NewRecorder()
-		handler := http.HandlerFunc(s.GetDockerConfigList())
+		handler := http.HandlerFunc(c.GetDockerConfigList())
 		handler.ServeHTTP(resp, req)
 
 		if status := resp.Code; status != test.expectStatus {
