@@ -64,6 +64,4 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-
-	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("view"))))
 }
